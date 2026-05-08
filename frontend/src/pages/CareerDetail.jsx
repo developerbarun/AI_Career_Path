@@ -1,27 +1,55 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { FaArrowLeft, FaDollarSign, FaChartLine, FaStar } from "react-icons/fa";
-import { fetchCareerBySlug } from "../services/api";
-import { fallbackCareers, iconMap } from "../data/fallbackData";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaDollarSign,
+  FaChartLine,
+  FaStar,
+  FaExternalLinkAlt,
+  FaTrophy,
+} from "react-icons/fa";
+import { fetchCareerBySlug, fetchResources } from "../services/api";
+import {
+  fallbackCareers,
+  fallbackResources,
+  iconMap,
+} from "../data/fallbackData";
+import { useProgress } from "../context/ProgressContext";
 
-const TABS = ["Roadmap", "Skills", "Tools & Companies"];
+const TABS = ["Roadmap", "Skills", "Resources", "Tools & Companies"];
 
 export default function CareerDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [career, setCareer] = useState(null);
+  const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Roadmap");
+  const {
+    isTaskCompleted,
+    toggleTask,
+    getPhaseProgress,
+    getCareerProgress,
+    getQuizScore,
+  } = useProgress();
 
   useEffect(() => {
     fetchCareerBySlug(slug)
       .then(setCareer)
       .catch(() => {
-        const fallback = fallbackCareers.find((c) => c.slug === slug);
-        setCareer(fallback || null);
+        const fb = fallbackCareers.find((c) => c.slug === slug);
+        setCareer(fb || null);
       })
       .finally(() => setLoading(false));
+
+    fetchResources({ careerPath: slug })
+      .then(setResources)
+      .catch(() =>
+        setResources(fallbackResources.filter((r) => r.careerPath === slug)),
+      );
   }, [slug]);
 
   if (loading) {
@@ -52,6 +80,8 @@ export default function CareerDetail() {
 
   const Icon = iconMap[career.icon];
   const skillWidths = { Beginner: 35, Intermediate: 65, Advanced: 95 };
+  const progress = getCareerProgress(career.slug, career.roadmap);
+  const quizScore = getQuizScore(career.slug);
 
   return (
     <div className="career-detail">
@@ -59,7 +89,6 @@ export default function CareerDetail() {
         <button className="back-btn" onClick={() => navigate("/careers")}>
           <FaArrowLeft /> Back to Careers
         </button>
-
         <motion.div
           className="career-detail-header"
           initial={{ opacity: 0, y: 20 }}
@@ -84,12 +113,34 @@ export default function CareerDetail() {
                 <FaChartLine className="icon" style={{ color: "#F9A826" }} />
                 {career.demandLevel} Demand
               </span>
+              {progress.total > 0 && (
+                <span
+                  className="detail-badge"
+                  style={{ color: "var(--accent-green)" }}
+                >
+                  {progress.percent}% Complete
+                </span>
+              )}
+              {quizScore && (
+                <span
+                  className="detail-badge"
+                  style={{ color: "var(--accent-orange)" }}
+                >
+                  <FaTrophy /> Quiz: {quizScore.score}/{quizScore.total}
+                </span>
+              )}
             </div>
+            <button
+              className="btn-primary"
+              style={{ marginTop: "1rem" }}
+              onClick={() => navigate(`/careers/${slug}/quiz`)}
+            >
+              Take Knowledge Quiz <FaArrowRight />
+            </button>
           </div>
         </motion.div>
       </div>
 
-      {/* Tabs */}
       <div className="career-tabs">
         {TABS.map((tab) => (
           <button
@@ -102,7 +153,6 @@ export default function CareerDetail() {
         ))}
       </div>
 
-      {/* Tab Content */}
       <div className="tab-content">
         {activeTab === "Roadmap" && (
           <motion.div
@@ -110,28 +160,60 @@ export default function CareerDetail() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            {career.roadmap?.map((phase, i) => (
-              <motion.div
-                key={i}
-                className="roadmap-phase"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.15 }}
-              >
-                <div className="roadmap-phase-header">
-                  <h3>
-                    <span className="phase-number">{phase.phase}</span>
-                    {phase.title}
-                  </h3>
-                  <span className="phase-duration">{phase.duration}</span>
-                </div>
-                <div className="roadmap-topics">
-                  {phase.topics?.map((topic, j) => (
-                    <span key={j}>{topic}</span>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
+            {career.roadmap?.map((phase, i) => {
+              const done = getPhaseProgress(
+                career.slug,
+                phase.phase,
+                phase.topics,
+              );
+              return (
+                <motion.div
+                  key={i}
+                  className="roadmap-phase"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.15 }}
+                >
+                  <div className="roadmap-phase-header">
+                    <h3>
+                      <span className="phase-number">{phase.phase}</span>
+                      {phase.title}
+                    </h3>
+                    <div className="phase-header-right">
+                      <span className="phase-progress">
+                        {done} / {phase.topics.length}
+                      </span>
+                      <span className="phase-duration">{phase.duration}</span>
+                    </div>
+                  </div>
+                  <div className="roadmap-topics">
+                    {phase.topics?.map((topic, j) => {
+                      const completed = isTaskCompleted(
+                        career.slug,
+                        phase.phase,
+                        topic,
+                      );
+                      return (
+                        <label
+                          key={j}
+                          className={`task-item ${completed ? "task-done" : ""}`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={completed}
+                            onChange={() =>
+                              toggleTask(career.slug, phase.phase, topic)
+                            }
+                          />
+                          <span className="task-checkmark" />
+                          <span className="task-label">{topic}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              );
+            })}
           </motion.div>
         )}
 
@@ -164,6 +246,60 @@ export default function CareerDetail() {
           </motion.div>
         )}
 
+        {activeTab === "Resources" && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            {resources.length > 0 ? (
+              <div className="resources-grid">
+                {resources.map((resource, i) => (
+                  <motion.div
+                    key={resource._id || i}
+                    className={`resource-card ${resource.url ? "resource-card-clickable" : ""}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    onClick={() =>
+                      resource.url &&
+                      window.open(resource.url, "_blank", "noopener")
+                    }
+                  >
+                    <div className="resource-card-header">
+                      <span className={`resource-type ${resource.type}`}>
+                        {resource.type}
+                      </span>
+                      {resource.free && (
+                        <span className="resource-free">FREE</span>
+                      )}
+                    </div>
+                    <h3>{resource.title}</h3>
+                    <p>{resource.description}</p>
+                    <div className="resource-rating">
+                      <FaStar /> {resource.rating?.toFixed(1)}
+                      <span
+                        style={{
+                          color: "var(--text-muted)",
+                          marginLeft: 8,
+                          fontSize: "0.8rem",
+                        }}
+                      >
+                        {resource.difficulty}
+                      </span>
+                    </div>
+                    {resource.url && (
+                      <div className="resource-link">
+                        Visit Resource <FaExternalLinkAlt />
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: "var(--text-muted)", textAlign: "center" }}>
+                No resources available for this career path yet.
+              </p>
+            )}
+          </motion.div>
+        )}
+
         {activeTab === "Tools & Companies" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <h3 style={{ marginBottom: "1rem", fontSize: "1.2rem" }}>
@@ -182,7 +318,6 @@ export default function CareerDetail() {
                 </motion.span>
               ))}
             </div>
-
             <h3 style={{ marginBottom: "1rem", fontSize: "1.2rem" }}>
               Top Hiring Companies
             </h3>
@@ -199,7 +334,6 @@ export default function CareerDetail() {
                 </motion.span>
               ))}
             </div>
-
             {career.prerequisites?.length > 0 && (
               <>
                 <h3 style={{ marginBottom: "1rem", fontSize: "1.2rem" }}>

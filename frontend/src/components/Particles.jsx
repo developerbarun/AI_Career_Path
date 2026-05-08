@@ -1,16 +1,18 @@
-import { useMemo } from "react";
+import { useState } from "react";
+
+function generateParticles() {
+  return Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 20,
+    duration: 15 + Math.random() * 20,
+    size: 2 + Math.random() * 4,
+    opacity: 0.1 + Math.random() * 0.3,
+  }));
+}
 
 export default function Particles() {
-  const particles = useMemo(() => {
-    return Array.from({ length: 30 }, (_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      delay: Math.random() * 20,
-      duration: 15 + Math.random() * 20,
-      size: 2 + Math.random() * 4,
-      opacity: 0.1 + Math.random() * 0.3,
-    }));
-  }, []);
+  const [particles] = useState(generateParticles());
 
   return (
     <div className="floating-particles">

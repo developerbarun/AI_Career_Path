@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { FaArrowRight, FaCompass } from "react-icons/fa";
 import CareerCard from "../components/CareerCard";

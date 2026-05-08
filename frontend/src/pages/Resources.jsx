@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaExternalLinkAlt } from "react-icons/fa";
 import { fetchResources } from "../services/api";
 import { fallbackResources } from "../data/fallbackData";
 
@@ -54,11 +55,15 @@ export default function Resources() {
             {filtered.map((resource, i) => (
               <motion.div
                 key={resource._id || i}
-                className="resource-card"
+                className={`resource-card ${resource.url ? "resource-card-clickable" : ""}`}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
+                onClick={() =>
+                  resource.url &&
+                  window.open(resource.url, "_blank", "noopener")
+                }
               >
                 <div className="resource-card-header">
                   <span className={`resource-type ${resource.type}`}>
@@ -81,6 +86,11 @@ export default function Resources() {
                     {resource.difficulty}
                   </span>
                 </div>
+                {resource.url && (
+                  <div className="resource-link">
+                    Visit Resource <FaExternalLinkAlt />
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>

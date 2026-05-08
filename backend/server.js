@@ -6,6 +6,7 @@ require("dotenv").config();
 const careerRoutes = require("./routes/careerRoutes");
 const resourceRoutes = require("./routes/resourceRoutes");
 const quizRoutes = require("./routes/quizRoutes");
+const pathRoutes = require("./routes/pathRoutes");
 
 const app = express();
 
@@ -23,6 +24,7 @@ mongoose
 app.use("/api/careers", careerRoutes);
 app.use("/api/resources", resourceRoutes);
 app.use("/api/quiz", quizRoutes);
+app.use("/api/paths", pathRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
