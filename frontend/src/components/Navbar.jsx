@@ -49,6 +49,14 @@ export default function Navbar() {
           </Link>
         </li>
         <li>
+          <Link
+            to="/dashboard"
+            className={isActive("/dashboard") ? "active" : ""}
+          >
+            Dashboard
+          </Link>
+        </li>
+        <li>
           <Link to="/quiz">
             <button className="nav-cta">Take Quiz</button>
           </Link>

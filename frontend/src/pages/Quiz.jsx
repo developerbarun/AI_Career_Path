@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaArrowRight, FaRedo } from "react-icons/fa";
 import { fetchQuiz, generateCareerPath } from "../services/api";
 import { fallbackQuiz, careerNames } from "../data/fallbackData";
+import { getOrCreateGuestUserId } from "../utils/guestUser";
 
 export default function Quiz() {
   const navigate = useNavigate();
@@ -15,6 +16,19 @@ export default function Quiz() {
   const [loading, setLoading] = useState(true);
   const [generatingPath, setGeneratingPath] = useState(false);
   const [generatedPath, setGeneratedPath] = useState(null);
+
+  const getPathIdValue = (path) => {
+    if (!path || !path.pathId) return "";
+    if (typeof path.pathId === "string") return path.pathId;
+    if (typeof path.pathId === "object" && typeof path.pathId.$oid === "string") {
+      return path.pathId.$oid;
+    }
+    if (typeof path.pathId.toString === "function") {
+      const value = path.pathId.toString();
+      return value === "[object Object]" ? "" : value;
+    }
+    return "";
+  };
 
   useEffect(() => {
     fetchQuiz()
@@ -61,15 +75,20 @@ export default function Quiz() {
 
     setResults(sorted);
 
+    const topScore = sorted[0]?.score || 0;
+    const computedMatchPercent =
+      questions.length > 0
+        ? Math.min(99, Math.round((topScore / (questions.length * 3)) * 100))
+        : 0;
+
     // Trigger AI path generation
-    triggerPathGeneration(allAnswers);
+    triggerPathGeneration(allAnswers, computedMatchPercent);
   };
 
-  const triggerPathGeneration = async (allAnswers) => {
+  const triggerPathGeneration = async (allAnswers, matchPercent) => {
     try {
       setGeneratingPath(true);
-      const userId = localStorage.getItem("userId") || `user_${Date.now()}`;
-      localStorage.setItem("userId", userId);
+      const userId = getOrCreateGuestUserId();
 
       // Prepare answers for API
       const quizAnswersForAPI = allAnswers.map((answer, index) => ({
@@ -78,7 +97,11 @@ export default function Quiz() {
         selectedOption: answer.text,
       }));
 
-      const response = await generateCareerPath(quizAnswersForAPI, userId);
+      const response = await generateCareerPath(
+        quizAnswersForAPI,
+        userId,
+        matchPercent,
+      );
       setGeneratedPath(response.path);
       setGeneratingPath(false);
     } catch (error) {
@@ -110,7 +133,7 @@ export default function Quiz() {
     const topSlug = topCareer?.career;
     const matchPercent = Math.min(
       99,
-      Math.round((topCareer.score / (questions.length * 3)) * 100),
+      Math.round(((topCareer?.score || 0) / (questions.length * 3)) * 100),
     );
 
     return (
@@ -139,16 +162,30 @@ export default function Quiz() {
               </p>
             </div>
           ) : generatedPath ? (
-            <div style={{ padding: "2rem", background: "rgba(108, 99, 255, 0.05)", borderRadius: "12px", marginBottom: "2rem" }}>
+            <div
+              style={{
+                padding: "2rem",
+                background: "rgba(108, 99, 255, 0.05)",
+                borderRadius: "12px",
+                marginBottom: "2rem",
+              }}
+            >
               <h3 style={{ marginBottom: "1rem", color: "var(--accent-blue)" }}>
                 ✨ Your Personalized Path
               </h3>
-              <p style={{ color: "var(--text-secondary)", marginBottom: "1rem" }}>
+              <p
+                style={{ color: "var(--text-secondary)", marginBottom: "1rem" }}
+              >
                 {generatedPath.pathData?.description}
               </p>
               <button
                 className="btn-primary"
                 onClick={() => {
+                  const generatedPathId = getPathIdValue(generatedPath);
+                  if (generatedPathId) {
+                    navigate(`/path/${generatedPathId}`);
+                    return;
+                  }
                   navigate("/dashboard");
                 }}
                 style={{ marginRight: "1rem" }}
@@ -182,8 +219,8 @@ export default function Quiz() {
                     marginRight: "auto",
                   }}
                 >
-                  Based on your answers, this role aligns best with your skills and
-                  interests.
+                  Based on your answers, this role aligns best with your skills
+                  and interests.
                 </p>
                 <button
                   className="btn-primary"

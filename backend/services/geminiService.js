@@ -9,7 +9,8 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 const careerTemplates = {
   "ml-engineer": {
     careerTitle: "Machine Learning Engineer",
-    description: "Design and build ML systems that learn from data. Develop algorithms, train models, and deploy them to production to solve real-world problems at scale.",
+    description:
+      "Design and build ML systems that learn from data. Develop algorithms, train models, and deploy them to production to solve real-world problems at scale.",
     demandLevel: "Very High",
     salaryRange: { min: 110000, max: 200000 },
     skills: [
@@ -25,7 +26,8 @@ const careerTemplates = {
   },
   "data-scientist": {
     careerTitle: "Data Scientist",
-    description: "Extract insights from data through analysis and visualization. Build statistical models and communicate findings to drive business decisions.",
+    description:
+      "Extract insights from data through analysis and visualization. Build statistical models and communicate findings to drive business decisions.",
     demandLevel: "High",
     salaryRange: { min: 100000, max: 180000 },
     skills: [
@@ -41,7 +43,8 @@ const careerTemplates = {
   },
   "nlp-engineer": {
     careerTitle: "NLP Engineer",
-    description: "Build systems that understand and process human language. Work with transformers and large language models to create conversational AI.",
+    description:
+      "Build systems that understand and process human language. Work with transformers and large language models to create conversational AI.",
     demandLevel: "Very High",
     salaryRange: { min: 120000, max: 210000 },
     skills: [
@@ -57,7 +60,8 @@ const careerTemplates = {
   },
   "cv-engineer": {
     careerTitle: "Computer Vision Engineer",
-    description: "Create systems that can see and understand images and videos. Work on object detection, image segmentation, and visual recognition.",
+    description:
+      "Create systems that can see and understand images and videos. Work on object detection, image segmentation, and visual recognition.",
     demandLevel: "High",
     salaryRange: { min: 115000, max: 200000 },
     skills: [
@@ -80,7 +84,8 @@ async function generateCareerPath(quizAnswers, userInterests) {
   try {
     // Determine best career path from quiz answers
     const careerSlug = determineCareerFromAnswers(quizAnswers);
-    const template = careerTemplates[careerSlug] || careerTemplates["ml-engineer"];
+    const template =
+      careerTemplates[careerSlug] || careerTemplates["ml-engineer"];
 
     // Create phases based on template
     const careerPath = {
@@ -109,25 +114,46 @@ function generatePhases(careerTitle) {
         phase: 1,
         title: "Foundation",
         duration: "3-4 months",
-        topics: ["Python Programming", "Linear Algebra & Calculus", "Probability & Statistics", "Data Structures"],
+        topics: [
+          "Python Programming",
+          "Linear Algebra & Calculus",
+          "Probability & Statistics",
+          "Data Structures",
+        ],
       },
       {
         phase: 2,
         title: "Core ML",
         duration: "4-6 months",
-        topics: ["Supervised Learning", "Unsupervised Learning", "Neural Networks", "Feature Engineering"],
+        topics: [
+          "Supervised Learning",
+          "Unsupervised Learning",
+          "Neural Networks",
+          "Feature Engineering",
+        ],
       },
       {
         phase: 3,
         title: "Advanced Topics",
         duration: "3-4 months",
-        topics: ["Deep Learning", "Computer Vision Basics", "NLP Fundamentals", "Reinforcement Learning Intro"],
+        topics: [
+          "Deep Learning",
+          "Computer Vision Basics",
+          "NLP Fundamentals",
+          "Reinforcement Learning Intro",
+        ],
       },
       {
         phase: 4,
         title: "Production & Deployment",
         duration: "2-3 months",
-        topics: ["MLOps", "Model Deployment", "A/B Testing", "Cloud Platforms", "Docker & Kubernetes"],
+        topics: [
+          "MLOps",
+          "Model Deployment",
+          "A/B Testing",
+          "Cloud Platforms",
+          "Docker & Kubernetes",
+        ],
       },
     ],
     "Data Scientist": [
@@ -135,25 +161,45 @@ function generatePhases(careerTitle) {
         phase: 1,
         title: "Foundation",
         duration: "2-3 months",
-        topics: ["Python Basics", "SQL Fundamentals", "Statistics Essentials", "Data Manipulation"],
+        topics: [
+          "Python Basics",
+          "SQL Fundamentals",
+          "Statistics Essentials",
+          "Data Manipulation",
+        ],
       },
       {
         phase: 2,
         title: "Data Analysis",
         duration: "3-4 months",
-        topics: ["Exploratory Data Analysis", "Data Visualization", "Hypothesis Testing", "Statistical Models"],
+        topics: [
+          "Exploratory Data Analysis",
+          "Data Visualization",
+          "Hypothesis Testing",
+          "Statistical Models",
+        ],
       },
       {
         phase: 3,
         title: "Machine Learning",
         duration: "3-4 months",
-        topics: ["ML Algorithms", "Model Evaluation", "Feature Engineering", "Predictive Analytics"],
+        topics: [
+          "ML Algorithms",
+          "Model Evaluation",
+          "Feature Engineering",
+          "Predictive Analytics",
+        ],
       },
       {
         phase: 4,
         title: "Communication & Deployment",
         duration: "2-3 months",
-        topics: ["Data Storytelling", "Dashboard Creation", "Presenting Insights", "Model Deployment"],
+        topics: [
+          "Data Storytelling",
+          "Dashboard Creation",
+          "Presenting Insights",
+          "Model Deployment",
+        ],
       },
     ],
     "NLP Engineer": [
@@ -161,25 +207,45 @@ function generatePhases(careerTitle) {
         phase: 1,
         title: "Foundation",
         duration: "2-3 months",
-        topics: ["Python Advanced", "Linear Algebra Deep Dive", "Probability Theory", "NLP Basics"],
+        topics: [
+          "Python Advanced",
+          "Linear Algebra Deep Dive",
+          "Probability Theory",
+          "NLP Basics",
+        ],
       },
       {
         phase: 2,
         title: "NLP Fundamentals",
         duration: "3-4 months",
-        topics: ["Tokenization & Preprocessing", "Word Embeddings", "Sequence Models", "RNNs & LSTMs"],
+        topics: [
+          "Tokenization & Preprocessing",
+          "Word Embeddings",
+          "Sequence Models",
+          "RNNs & LSTMs",
+        ],
       },
       {
         phase: 3,
         title: "Transformers & Modern NLP",
         duration: "4-5 months",
-        topics: ["Transformer Architecture", "BERT & GPT", "Fine-tuning LLMs", "Multi-lingual NLP"],
+        topics: [
+          "Transformer Architecture",
+          "BERT & GPT",
+          "Fine-tuning LLMs",
+          "Multi-lingual NLP",
+        ],
       },
       {
         phase: 4,
         title: "Production NLP",
         duration: "2-3 months",
-        topics: ["NLP Deployment", "API Development", "Optimization", "Real-world Applications"],
+        topics: [
+          "NLP Deployment",
+          "API Development",
+          "Optimization",
+          "Real-world Applications",
+        ],
       },
     ],
     "Computer Vision Engineer": [
@@ -187,25 +253,45 @@ function generatePhases(careerTitle) {
         phase: 1,
         title: "Foundation",
         duration: "3-4 months",
-        topics: ["Python Mastery", "Linear Algebra & Calculus", "Image Processing Basics", "Signal Processing"],
+        topics: [
+          "Python Mastery",
+          "Linear Algebra & Calculus",
+          "Image Processing Basics",
+          "Signal Processing",
+        ],
       },
       {
         phase: 2,
         title: "Computer Vision Fundamentals",
         duration: "3-4 months",
-        topics: ["Image Classification", "Feature Detection", "Edge Detection", "Image Filtering"],
+        topics: [
+          "Image Classification",
+          "Feature Detection",
+          "Edge Detection",
+          "Image Filtering",
+        ],
       },
       {
         phase: 3,
         title: "Deep Learning for Vision",
         duration: "3-4 months",
-        topics: ["CNNs", "Object Detection", "Image Segmentation", "Face Recognition"],
+        topics: [
+          "CNNs",
+          "Object Detection",
+          "Image Segmentation",
+          "Face Recognition",
+        ],
       },
       {
         phase: 4,
         title: "Advanced & Production",
         duration: "2-3 months",
-        topics: ["Real-time Vision", "Video Processing", "Optimization", "Deployment on Edge Devices"],
+        topics: [
+          "Real-time Vision",
+          "Video Processing",
+          "Optimization",
+          "Deployment on Edge Devices",
+        ],
       },
     ],
   };
@@ -297,22 +383,47 @@ async function getResourcesForTopic(topic, careerSlug) {
  * Enrich path with resources
  */
 async function enrichPathWithResources(careerPath, careerSlug) {
+  const normalizeTopic = (topic) => {
+    if (typeof topic === "string") {
+      return { name: topic, resources: [] };
+    }
+
+    if (topic && typeof topic === "object") {
+      return {
+        name: topic.name || "",
+        resources: Array.isArray(topic.resources) ? topic.resources : [],
+      };
+    }
+
+    return { name: String(topic || ""), resources: [] };
+  };
+
   try {
     const enrichedPhases = await Promise.all(
       careerPath.phases.map(async (phase) => {
         const enrichedTopics = await Promise.all(
           phase.topics.map(async (topic) => {
-            const resources = await getResourcesForTopic(topic, careerSlug);
-            return { name: topic, resources };
-          })
+            const normalizedTopic = normalizeTopic(topic);
+            const resources = await getResourcesForTopic(
+              normalizedTopic.name,
+              careerSlug,
+            );
+            return { name: normalizedTopic.name, resources };
+          }),
         );
         return { ...phase, topics: enrichedTopics };
-      })
+      }),
     );
     return { ...careerPath, phases: enrichedPhases };
   } catch (error) {
     console.error("Error enriching path:", error);
-    return careerPath;
+    return {
+      ...careerPath,
+      phases: (careerPath.phases || []).map((phase) => ({
+        ...phase,
+        topics: (phase.topics || []).map((topic) => normalizeTopic(topic)),
+      })),
+    };
   }
 }
 
@@ -340,7 +451,8 @@ function extractPlatform(url) {
  * Extract interests from quiz
  */
 function extractInterestsFromQuizAnswers(quizAnswers) {
-  if (!quizAnswers || quizAnswers.length === 0) return "AI and machine learning";
+  if (!quizAnswers || quizAnswers.length === 0)
+    return "AI and machine learning";
   const interests = quizAnswers
     .map((a) => a.selectedOption?.text || a.selectedText)
     .filter(Boolean)

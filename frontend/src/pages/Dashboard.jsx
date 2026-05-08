@@ -1,16 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { FaTrophy, FaTasks, FaChartPie, FaRedo, FaStar } from "react-icons/fa";
+import { FaTrophy, FaTasks, FaChartPie, FaRedo } from "react-icons/fa";
 import { useProgress } from "../context/ProgressContext";
 import { fetchCareers, getUserPaths } from "../services/api";
 import { fallbackCareers, iconMap } from "../data/fallbackData";
+import { getOrCreateGuestUserId } from "../utils/guestUser";
 
 export default function Dashboard() {
   const [careers, setCareers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [generatedPaths, setGeneratedPaths] = useState([]);
+  const [confirmReset, setConfirmReset] = useState(false);
   const {
     getCareerProgress,
     getOverallProgress,
@@ -26,13 +28,85 @@ export default function Dashboard() {
       .finally(() => setLoading(false));
 
     // Load generated paths
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      getUserPaths(userId)
-        .then((data) => setGeneratedPaths(data.paths || []))
-        .catch(() => setGeneratedPaths([]));
-    }
+    const userId = getOrCreateGuestUserId();
+    getUserPaths(userId)
+      .then((data) => setGeneratedPaths(data.paths || []))
+      .catch(() => setGeneratedPaths([]));
   }, []);
+
+  const overall = getOverallProgress(careers);
+  const quizScores = getAllQuizScores();
+  const quizCount = Object.keys(quizScores).length;
+  const normalizedGeneratedPaths = useMemo(() => {
+    const getPathIdValue = (path) => {
+      if (!path || !path.pathId) return "";
+      if (typeof path.pathId === "string") return path.pathId;
+      if (
+        typeof path.pathId === "object" &&
+        typeof path.pathId.$oid === "string"
+      ) {
+        return path.pathId.$oid;
+      }
+      if (typeof path.pathId.toString === "function") {
+        const value = path.pathId.toString();
+        return value === "[object Object]" ? "" : value;
+      }
+      return "";
+    };
+
+    const sorted = [...generatedPaths].sort(
+      (a, b) => new Date(b.generatedAt) - new Date(a.generatedAt),
+    );
+
+    const deduped = [];
+    const seen = new Set();
+
+    for (const path of sorted) {
+      const dedupeKey = [
+        path.careerSlug || "",
+        (path.careerTitle || path.pathData?.careerTitle || "")
+          .trim()
+          .toLowerCase(),
+      ]
+        .filter(Boolean)
+        .join("|");
+      const fallback = path.pathId?.toString() || "";
+      const resolvedKey = dedupeKey || fallback;
+
+      if (!seen.has(resolvedKey)) {
+        seen.add(resolvedKey);
+        deduped.push({
+          ...path,
+          pathIdValue: getPathIdValue(path),
+        });
+      }
+    }
+
+    return deduped.filter((path) => Boolean(path.pathIdValue));
+  }, [generatedPaths]);
+  const careerProgressRows = useMemo(
+    () =>
+      careers
+        .map((career) => ({
+          ...career,
+          progress: getCareerProgress(career.slug, career.roadmap),
+        }))
+        .filter((career) => career.progress.total > 0),
+    [careers, getCareerProgress],
+  );
+  const suggestedCareer = useMemo(
+    () =>
+      [...careerProgressRows].sort(
+        (a, b) => a.progress.percent - b.progress.percent,
+      )[0],
+    [careerProgressRows],
+  );
+  const progressInsight =
+    overall.percent >= 70
+      ? "Excellent momentum — you are consistently progressing."
+      : overall.percent >= 40
+        ? "Good pace — keep building weekly consistency."
+        : "You are just getting started — focus on one path and complete a phase.";
 
   if (loading) {
     return (
@@ -41,10 +115,6 @@ export default function Dashboard() {
       </div>
     );
   }
-
-  const overall = getOverallProgress(careers);
-  const quizScores = getAllQuizScores();
-  const quizCount = Object.keys(quizScores).length;
 
   return (
     <div className="dashboard-page">
@@ -87,32 +157,72 @@ export default function Dashboard() {
             <div className="stat-label">Quizzes Taken</div>
           </motion.div>
         </div>
+        <div className="dashboard-insights">
+          <div className="dashboard-insight-card">
+            <h3>Progress insight</h3>
+            <p>{progressInsight}</p>
+          </div>
+          <div className="dashboard-insight-card">
+            <h3>Quiz coverage</h3>
+            <p>
+              You have completed {quizCount} quiz{quizCount === 1 ? "" : "zes"}.
+              Try another quiz to refine your recommendations.
+            </p>
+          </div>
+          <div className="dashboard-insight-card">
+            <h3>Recommended next focus</h3>
+            <p>
+              {suggestedCareer
+                ? `${suggestedCareer.title} is your lowest-progress track (${suggestedCareer.progress.percent}%).`
+                : "Start with one predefined track and complete the first phase topics."}
+            </p>
+          </div>
+        </div>
 
         {/* AI-Generated Paths Section */}
-        {generatedPaths.length > 0 && (
+        {normalizedGeneratedPaths.length > 0 && (
           <>
             <div style={{ marginTop: "3rem", marginBottom: "2rem" }}>
-              <h2 style={{ marginBottom: "1rem" }}>✨ Your AI-Generated Paths</h2>
-              <p style={{ color: "var(--text-secondary)", marginBottom: "1.5rem" }}>
-                Custom career paths created just for you based on your quiz answers
+              <h2 style={{ marginBottom: "1rem" }}>
+                ✨ Your AI-Generated Paths
+              </h2>
+              <p
+                style={{
+                  color: "var(--text-secondary)",
+                  marginBottom: "1.5rem",
+                }}
+              >
+                Custom career paths created just for you based on your quiz
+                answers
               </p>
               <div className="dashboard-careers">
-                {generatedPaths.map((path, i) => {
+                {normalizedGeneratedPaths.map((path, i) => {
                   const completedTopics = path.completedTopics?.length || 0;
-                  const totalTopics = path.pathData?.phases?.reduce(
-                    (sum, phase) => sum + (phase.topics?.length || 0),
-                    0
-                  ) || 0;
-                  const percent = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
+                  const totalTopics =
+                    path.pathData?.phases?.reduce(
+                      (sum, phase) => sum + (phase.topics?.length || 0),
+                      0,
+                    ) || 0;
+                  const progressPercent =
+                    totalTopics > 0
+                      ? Math.round((completedTopics / totalTopics) * 100)
+                      : 0;
+                  const hasMatchPercent = typeof path.matchPercent === "number";
+                  const displayPercent = hasMatchPercent
+                    ? path.matchPercent
+                    : progressPercent;
 
                   return (
                     <motion.div
-                      key={path.pathId}
+                      key={path.pathIdValue || `${path.careerSlug}-${i}`}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 + i * 0.08 }}
                     >
-                      <Link to={`/path/${path.pathId}`} className="dashboard-career-card">
+                      <Link
+                        to={`/path/${path.pathIdValue}`}
+                        className="dashboard-career-card"
+                      >
                         <div className="dcc-header">
                           <div
                             className="dcc-icon"
@@ -124,8 +234,12 @@ export default function Dashboard() {
                             ✨
                           </div>
                           <div>
-                            <h3>{path.pathData?.careerTitle || "Custom Path"}</h3>
-                            <span className="dcc-percent">{percent}%</span>
+                            <h3>
+                              {path.pathData?.careerTitle || "Custom Path"}
+                            </h3>
+                            <span className="dcc-percent">
+                              {displayPercent}% {hasMatchPercent ? "Match" : "Progress"}
+                            </span>
                           </div>
                         </div>
                         <div className="dcc-progress-bar-bg">
@@ -133,16 +247,25 @@ export default function Dashboard() {
                             className="dcc-progress-bar"
                             style={{ background: "#6C63FF" }}
                             initial={{ width: 0 }}
-                            animate={{ width: `${percent}%` }}
-                            transition={{ duration: 0.8, delay: 0.2 + i * 0.08 }}
+                            animate={{ width: `${displayPercent}%` }}
+                            transition={{
+                              duration: 0.8,
+                              delay: 0.2 + i * 0.08,
+                            }}
                           />
                         </div>
                         <div className="dcc-meta">
                           <span>
-                            {completedTopics} / {totalTopics} topics
+                            {completedTopics} / {totalTopics} topics completed
                           </span>
-                          <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                            Generated: {new Date(path.generatedAt).toLocaleDateString()}
+                          <span
+                            style={{
+                              fontSize: "0.85rem",
+                              color: "var(--text-muted)",
+                            }}
+                          >
+                            Generated:{" "}
+                            {new Date(path.generatedAt).toLocaleDateString()}
                           </span>
                         </div>
                       </Link>
@@ -216,15 +339,33 @@ export default function Dashboard() {
         </div>
 
         <div style={{ textAlign: "center", marginTop: "3rem" }}>
-          <button
-            className="btn-secondary"
-            onClick={() => {
-              if (window.confirm("Reset all progress? This cannot be undone."))
-                resetProgress();
-            }}
-          >
-            <FaRedo /> Reset All Progress
-          </button>
+          {!confirmReset ? (
+            <button
+              className="btn-secondary"
+              onClick={() => setConfirmReset(true)}
+            >
+              <FaRedo /> Reset All Progress
+            </button>
+          ) : (
+            <div className="reset-confirm">
+              <span>This will clear all saved progress. Continue?</span>
+              <button
+                className="btn-secondary danger"
+                onClick={() => {
+                  resetProgress();
+                  setConfirmReset(false);
+                }}
+              >
+                Yes, Reset
+              </button>
+              <button
+                className="btn-secondary"
+                onClick={() => setConfirmReset(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
       </section>
     </div>

@@ -19,17 +19,24 @@ export default function GeneratedPathDetail() {
   const [activeTab, setActiveTab] = useState("Roadmap");
   const [expandedTopics, setExpandedTopics] = useState(new Set());
   const [completedTopics, setCompletedTopics] = useState([]);
+  const [saveNotice, setSaveNotice] = useState(null);
 
   useEffect(() => {
     loadPath();
   }, [pathId]);
+
+  useEffect(() => {
+    if (!saveNotice) return;
+    const timer = setTimeout(() => setSaveNotice(null), 3000);
+    return () => clearTimeout(timer);
+  }, [saveNotice]);
 
   const loadPath = async () => {
     try {
       const data = await getGeneratedPath(pathId);
       setPath(data);
       setCompletedTopics(
-        data.completedTopics?.map((ct) => `${ct.phase}-${ct.topic}`) || []
+        data.completedTopics?.map((ct) => `${ct.phase}-${ct.topic}`) || [],
       );
       setLoading(false);
     } catch (error) {
@@ -51,7 +58,7 @@ export default function GeneratedPathDetail() {
   const toggleTopicComplete = (phase, topic) => {
     const key = `${phase}-${topic}`;
     setCompletedTopics((prev) =>
-      prev.includes(key) ? prev.filter((t) => t !== key) : [...prev, key]
+      prev.includes(key) ? prev.filter((t) => t !== key) : [...prev, key],
     );
   };
 
@@ -63,9 +70,16 @@ export default function GeneratedPathDetail() {
       });
 
       await updatePathCustomizations(pathId, path.customizations, completed);
-      alert("Progress saved!");
+      setSaveNotice({
+        type: "success",
+        message: "Progress saved successfully.",
+      });
     } catch (error) {
       console.error("Error saving progress:", error);
+      setSaveNotice({
+        type: "error",
+        message: "Failed to save progress. Please try again.",
+      });
     }
   };
 
@@ -79,7 +93,10 @@ export default function GeneratedPathDetail() {
 
   if (!path) {
     return (
-      <div className="career-detail" style={{ textAlign: "center", padding: "8rem 2rem" }}>
+      <div
+        className="career-detail"
+        style={{ textAlign: "center", padding: "8rem 2rem" }}
+      >
         <h2>Path not found</h2>
         <button
           className="btn-primary"
@@ -115,8 +132,12 @@ export default function GeneratedPathDetail() {
             <h1>{pathData.careerTitle}</h1>
             <p>{pathData.description}</p>
             <div className="career-detail-badges">
-              <span className="detail-badge">Generated: {new Date(path.generatedAt).toLocaleDateString()}</span>
-              <span className="detail-badge">Demand: {pathData.demandLevel}</span>
+              <span className="detail-badge">
+                Generated: {new Date(path.generatedAt).toLocaleDateString()}
+              </span>
+              <span className="detail-badge">
+                Demand: {pathData.demandLevel}
+              </span>
               {pathData.salaryRange && (
                 <span className="detail-badge">
                   💰 ${(pathData.salaryRange.min / 1000).toFixed(0)}k - $
@@ -124,9 +145,18 @@ export default function GeneratedPathDetail() {
                 </span>
               )}
             </div>
-            <button className="btn-secondary" onClick={saveProgress} style={{ marginTop: "1rem" }}>
+            <button
+              className="btn-secondary"
+              onClick={saveProgress}
+              style={{ marginTop: "1rem" }}
+            >
               Save Progress
             </button>
+            {saveNotice && (
+              <div className={`inline-notice ${saveNotice.type}`}>
+                {saveNotice.message}
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
@@ -146,10 +176,14 @@ export default function GeneratedPathDetail() {
       <div className="tab-content">
         {/* Roadmap Tab with Topics & Resources */}
         {activeTab === "Roadmap" && (
-          <motion.div className="roadmap" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <motion.div
+            className="roadmap"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
             {pathData.phases?.map((phase, i) => {
-              const phaseCompletedCount = completedTopics.filter(
-                (t) => t.startsWith(`${phase.phase}-`)
+              const phaseCompletedCount = completedTopics.filter((t) =>
+                t.startsWith(`${phase.phase}-`),
               ).length;
               return (
                 <motion.div
@@ -173,11 +207,17 @@ export default function GeneratedPathDetail() {
                   </div>
                   <div className="roadmap-topics">
                     {phase.topics?.map((topicObj, j) => {
-                      const topicName = typeof topicObj === "string" ? topicObj : topicObj.name;
-                      const resources = typeof topicObj === "string" ? [] : topicObj.resources || [];
+                      const topicName =
+                        typeof topicObj === "string" ? topicObj : topicObj.name;
+                      const resources =
+                        typeof topicObj === "string"
+                          ? []
+                          : topicObj.resources || [];
                       const topicKey = `${phase.phase}-${j}`;
                       const isExpanded = expandedTopics.has(topicKey);
-                      const isCompleted = completedTopics.includes(`${phase.phase}-${topicName}`);
+                      const isCompleted = completedTopics.includes(
+                        `${phase.phase}-${topicName}`,
+                      );
 
                       return (
                         <div key={j}>
@@ -186,25 +226,40 @@ export default function GeneratedPathDetail() {
                               display: "flex",
                               alignItems: "center",
                               padding: "0.75rem",
-                              background: isExpanded ? "rgba(108, 99, 255, 0.05)" : "transparent",
+                              background: isExpanded
+                                ? "rgba(108, 99, 255, 0.05)"
+                                : "transparent",
                               borderRadius: "8px",
                               marginBottom: "0.5rem",
                               cursor: "pointer",
                               border: "1px solid transparent",
-                              borderColor: isExpanded ? "rgba(108, 99, 255, 0.2)" : "transparent",
+                              borderColor: isExpanded
+                                ? "rgba(108, 99, 255, 0.2)"
+                                : "transparent",
                             }}
                           >
                             <input
                               type="checkbox"
                               checked={isCompleted}
-                              onChange={() => toggleTopicComplete(phase.phase, topicName)}
-                              style={{ marginRight: "0.75rem", width: "18px", height: "18px", cursor: "pointer" }}
+                              onChange={() =>
+                                toggleTopicComplete(phase.phase, topicName)
+                              }
+                              style={{
+                                marginRight: "0.75rem",
+                                width: "18px",
+                                height: "18px",
+                                cursor: "pointer",
+                              }}
                             />
                             <span
                               style={{
                                 flex: 1,
-                                textDecoration: isCompleted ? "line-through" : "none",
-                                color: isCompleted ? "var(--text-muted)" : "inherit",
+                                textDecoration: isCompleted
+                                  ? "line-through"
+                                  : "none",
+                                color: isCompleted
+                                  ? "var(--text-muted)"
+                                  : "inherit",
                                 fontWeight: "500",
                               }}
                             >
@@ -222,7 +277,11 @@ export default function GeneratedPathDetail() {
                                   marginLeft: "0.5rem",
                                 }}
                               >
-                                {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
+                                {isExpanded ? (
+                                  <FaChevronUp />
+                                ) : (
+                                  <FaChevronDown />
+                                )}
                               </button>
                             )}
                           </div>
@@ -243,7 +302,12 @@ export default function GeneratedPathDetail() {
                                 <div
                                   key={rIdx}
                                   onClick={() =>
-                                    resource.url && window.open(resource.url, "_blank", "noopener")
+                                    resource.url &&
+                                    window.open(
+                                      resource.url,
+                                      "_blank",
+                                      "noopener",
+                                    )
                                   }
                                   style={{
                                     padding: "0.75rem",
@@ -251,7 +315,9 @@ export default function GeneratedPathDetail() {
                                     background: "white",
                                     borderRadius: "6px",
                                     border: "1px solid #e0e0e0",
-                                    cursor: resource.url ? "pointer" : "default",
+                                    cursor: resource.url
+                                      ? "pointer"
+                                      : "default",
                                     transition: "all 0.2s",
                                     display: "flex",
                                     justifyContent: "space-between",
@@ -259,13 +325,16 @@ export default function GeneratedPathDetail() {
                                   }}
                                   onMouseEnter={(e) => {
                                     if (resource.url) {
-                                      e.currentTarget.style.boxShadow = "0 2px 8px rgba(108, 99, 255, 0.15)";
-                                      e.currentTarget.style.transform = "translateX(4px)";
+                                      e.currentTarget.style.boxShadow =
+                                        "0 2px 8px rgba(108, 99, 255, 0.15)";
+                                      e.currentTarget.style.transform =
+                                        "translateX(4px)";
                                     }
                                   }}
                                   onMouseLeave={(e) => {
                                     e.currentTarget.style.boxShadow = "none";
-                                    e.currentTarget.style.transform = "translateX(0)";
+                                    e.currentTarget.style.transform =
+                                      "translateX(0)";
                                   }}
                                 >
                                   <div style={{ flex: 1 }}>
@@ -294,8 +363,12 @@ export default function GeneratedPathDetail() {
                                           fontSize: "0.75rem",
                                           padding: "0.25rem 0.5rem",
                                           borderRadius: "3px",
-                                          background: resource.free ? "#E8F5E9" : "#FFF3E0",
-                                          color: resource.free ? "#2E7D32" : "#E65100",
+                                          background: resource.free
+                                            ? "#E8F5E9"
+                                            : "#FFF3E0",
+                                          color: resource.free
+                                            ? "#2E7D32"
+                                            : "#E65100",
                                           fontWeight: "bold",
                                         }}
                                       >
@@ -339,7 +412,9 @@ export default function GeneratedPathDetail() {
                                           marginTop: "0.25rem",
                                         }}
                                       >
-                                        <FaStar style={{ marginRight: "0.25rem" }} />
+                                        <FaStar
+                                          style={{ marginRight: "0.25rem" }}
+                                        />
                                         {resource.rating.toFixed(1)}
                                       </div>
                                     )}
@@ -371,9 +446,17 @@ export default function GeneratedPathDetail() {
 
         {/* Skills Tab */}
         {activeTab === "Skills" && (
-          <motion.div className="skills-grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <motion.div
+            className="skills-grid"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
             {pathData.skills?.map((skill, i) => {
-              const skillWidths = { Beginner: 35, Intermediate: 65, Advanced: 95 };
+              const skillWidths = {
+                Beginner: 35,
+                Intermediate: 65,
+                Advanced: 95,
+              };
               return (
                 <motion.div
                   key={i}
@@ -401,7 +484,9 @@ export default function GeneratedPathDetail() {
         {/* Tools & Companies Tab */}
         {activeTab === "Tools & Companies" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <h3 style={{ marginBottom: "1rem", fontSize: "1.2rem" }}>Tools & Technologies</h3>
+            <h3 style={{ marginBottom: "1rem", fontSize: "1.2rem" }}>
+              Tools & Technologies
+            </h3>
             <div className="tags-row" style={{ marginBottom: "2.5rem" }}>
               {pathData.tools?.map((tool, i) => (
                 <motion.span
@@ -415,7 +500,9 @@ export default function GeneratedPathDetail() {
                 </motion.span>
               ))}
             </div>
-            <h3 style={{ marginBottom: "1rem", fontSize: "1.2rem" }}>Top Hiring Companies</h3>
+            <h3 style={{ marginBottom: "1rem", fontSize: "1.2rem" }}>
+              Top Hiring Companies
+            </h3>
             <div className="tags-row" style={{ marginBottom: "2.5rem" }}>
               {pathData.companies?.map((company, i) => (
                 <motion.span
@@ -431,7 +518,9 @@ export default function GeneratedPathDetail() {
             </div>
             {pathData.prerequisites?.length > 0 && (
               <>
-                <h3 style={{ marginBottom: "1rem", fontSize: "1.2rem" }}>Prerequisites</h3>
+                <h3 style={{ marginBottom: "1rem", fontSize: "1.2rem" }}>
+                  Prerequisites
+                </h3>
                 <div className="tags-row">
                   {pathData.prerequisites.map((pre, i) => (
                     <motion.span

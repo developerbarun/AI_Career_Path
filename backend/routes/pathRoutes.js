@@ -14,7 +14,7 @@ const {
  */
 router.post("/generate", async (req, res) => {
   try {
-    const { quizAnswers, userId } = req.body;
+    const { quizAnswers, userId, matchPercent } = req.body;
 
     if (!userId) {
       return res.status(400).json({ message: "userId is required" });
@@ -33,7 +33,9 @@ router.post("/generate", async (req, res) => {
     console.log("Step 2: Generated career path:", careerPath.careerTitle);
 
     // Get career slug for resource matching
-    const careerSlug = careerPath.careerTitle.toLowerCase().replace(/\s+/g, "-");
+    const careerSlug = careerPath.careerTitle
+      .toLowerCase()
+      .replace(/\s+/g, "-");
     console.log("Step 3: Career slug:", careerSlug);
 
     // Enrich path with resources for each topic
@@ -61,6 +63,10 @@ router.post("/generate", async (req, res) => {
       generatedAt: new Date(),
       careerTitle: careerPath.careerTitle,
       careerSlug: careerSlug,
+      matchPercent:
+        typeof matchPercent === "number"
+          ? Math.max(0, Math.min(100, Math.round(matchPercent)))
+          : undefined,
       quizAnswersSummary: interests,
       pathData: careerPath,
       customizations: {
@@ -71,7 +77,10 @@ router.post("/generate", async (req, res) => {
       completedTopics: [],
     };
 
-    console.log("Step 8: Pushing pathData to generatedPaths");
+    console.log("Step 8: Replacing existing generated path for career slug");
+    userProfile.generatedPaths = userProfile.generatedPaths.filter(
+      (p) => p.careerSlug !== careerSlug,
+    );
     userProfile.generatedPaths.push(pathData);
     console.log("Step 9: Saving userProfile");
     await userProfile.save();
@@ -106,9 +115,31 @@ router.get("/user/:userId", async (req, res) => {
       return res.json({ paths: [] });
     }
 
+    const sortedPaths = [...userProfile.generatedPaths].sort(
+      (a, b) => new Date(b.generatedAt) - new Date(a.generatedAt),
+    );
+    const dedupedPaths = [];
+    const seenKeys = new Set();
+    for (const path of sortedPaths) {
+      const dedupeKey = [
+        path.careerSlug || "",
+        (path.careerTitle || "").trim().toLowerCase(),
+      ]
+        .filter(Boolean)
+        .join("|");
+
+      const fallbackKey = path.pathId?.toString() || "";
+      const resolvedKey = dedupeKey || fallbackKey;
+
+      if (!seenKeys.has(resolvedKey)) {
+        seenKeys.add(resolvedKey);
+        dedupedPaths.push(path);
+      }
+    }
+
     res.json({
       userId,
-      paths: userProfile.generatedPaths,
+      paths: dedupedPaths,
     });
   } catch (error) {
     console.error("Error fetching user paths:", error);

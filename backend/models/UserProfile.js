@@ -12,6 +12,7 @@ const userProfileSchema = new mongoose.Schema(
         generatedAt: { type: Date, default: Date.now },
         careerTitle: String,
         careerSlug: String,
+        matchPercent: { type: Number, min: 0, max: 100 },
         quizAnswersSummary: String,
         pathData: {
           careerTitle: String,
@@ -26,7 +27,32 @@ const userProfileSchema = new mongoose.Schema(
               phase: Number,
               title: String,
               duration: String,
-              topics: [String],
+              topics: [
+                {
+                  name: String,
+                  resources: [
+                    {
+                      title: String,
+                      type: {
+                        type: String,
+                        enum: [
+                          "Course",
+                          "Book",
+                          "Tutorial",
+                          "Tool",
+                          "Community",
+                        ],
+                      },
+                      url: String,
+                      description: String,
+                      platform: String,
+                      difficulty: String,
+                      free: Boolean,
+                      rating: Number,
+                    },
+                  ],
+                },
+              ],
             },
           ],
           skills: [

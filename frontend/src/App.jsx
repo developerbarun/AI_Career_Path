@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
 import { ProgressProvider } from "./context/ProgressContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -11,8 +12,13 @@ import Resources from "./pages/Resources";
 import Quiz from "./pages/Quiz";
 import Dashboard from "./pages/Dashboard";
 import GeneratedPathDetail from "./pages/GeneratedPathDetail";
+import { getOrCreateGuestUserId } from "./utils/guestUser";
 
 function App() {
+  useEffect(() => {
+    getOrCreateGuestUserId();
+  }, []);
+
   return (
     <ProgressProvider>
       <BrowserRouter>

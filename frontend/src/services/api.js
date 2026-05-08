@@ -36,11 +36,11 @@ export async function submitQuiz(answers) {
 }
 
 // Path Generation APIs
-export async function generateCareerPath(quizAnswers, userId) {
+export async function generateCareerPath(quizAnswers, userId, matchPercent) {
   const res = await fetch(`${API_BASE}/paths/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ quizAnswers, userId }),
+    body: JSON.stringify({ quizAnswers, userId, matchPercent }),
   });
   if (!res.ok) throw new Error("Failed to generate career path");
   return res.json();

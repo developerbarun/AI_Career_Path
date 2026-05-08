@@ -14,6 +14,7 @@ export default function Footer() {
           <Link to="/">Home</Link>
           <Link to="/careers">Careers</Link>
           <Link to="/resources">Resources</Link>
+          <Link to="/dashboard">Dashboard</Link>
           <Link to="/quiz">Career Quiz</Link>
         </div>
         <div className="footer-bottom">
