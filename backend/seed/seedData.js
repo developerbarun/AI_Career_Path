@@ -95,6 +95,184 @@ const careerData = [
     ],
   },
   {
+    title: "MLOps Engineer",
+    slug: "mlops-engineer",
+    description:
+      "Build the infrastructure that lets AI models ship safely and scale reliably. Focus on deployment pipelines, monitoring, reproducibility, and model lifecycle management.",
+    icon: "FaCogs",
+    color: "#7A5CFA",
+    salaryRange: { min: 125000, max: 215000 },
+    demandLevel: "Very High",
+    skills: [
+      { name: "Docker & Kubernetes", level: "Advanced" },
+      { name: "CI/CD", level: "Advanced" },
+      { name: "Python", level: "Advanced" },
+      { name: "Cloud Platforms", level: "Advanced" },
+      { name: "Monitoring & Observability", level: "Intermediate" },
+      { name: "ML Model Deployment", level: "Advanced" },
+    ],
+    roadmap: [
+      {
+        phase: 1,
+        title: "Core Infrastructure",
+        duration: "2-3 months",
+        topics: [
+          "Linux & Shell Basics",
+          "Docker Fundamentals",
+          "Git & Version Control",
+          "Python Packaging",
+        ],
+      },
+      {
+        phase: 2,
+        title: "Deployment Pipelines",
+        duration: "3-4 months",
+        topics: [
+          "CI/CD for ML",
+          "Model Serving APIs",
+          "Kubernetes Basics",
+          "Feature Stores",
+        ],
+      },
+      {
+        phase: 3,
+        title: "Operations & Monitoring",
+        duration: "3 months",
+        topics: [
+          "Model Monitoring",
+          "Drift Detection",
+          "Logging & Alerting",
+          "A/B Testing",
+        ],
+      },
+      {
+        phase: 4,
+        title: "Scaling Systems",
+        duration: "Ongoing",
+        topics: [
+          "Cloud Cost Optimization",
+          "Infrastructure as Code",
+          "Security Best Practices",
+          "Multi-model Serving",
+        ],
+      },
+    ],
+    tools: [
+      "Docker",
+      "Kubernetes",
+      "GitHub Actions",
+      "MLflow",
+      "AWS",
+      "GCP",
+      "Prometheus",
+      "Grafana",
+    ],
+    companies: [
+      "Google",
+      "Amazon",
+      "Netflix",
+      "Spotify",
+      "Databricks",
+      "OpenAI",
+      "Meta",
+      "Uber",
+    ],
+    prerequisites: [
+      "Programming fundamentals",
+      "Cloud exposure",
+      "Interest in deployment and reliability",
+    ],
+  },
+  {
+    title: "AI Ethics Specialist",
+    slug: "ai-ethics-specialist",
+    description:
+      "Shape responsible AI systems that are fair, transparent, and safe. Work with policy, product, and engineering teams to evaluate risk and reduce harm.",
+    icon: "FaShieldAlt",
+    color: "#1FB6A6",
+    salaryRange: { min: 115000, max: 200000 },
+    demandLevel: "High",
+    skills: [
+      { name: "AI Governance", level: "Advanced" },
+      { name: "Risk Assessment", level: "Advanced" },
+      { name: "Policy Analysis", level: "Advanced" },
+      { name: "Data Privacy", level: "Intermediate" },
+      { name: "Research & Writing", level: "Advanced" },
+      { name: "Stakeholder Communication", level: "Advanced" },
+    ],
+    roadmap: [
+      {
+        phase: 1,
+        title: "AI Fundamentals",
+        duration: "2-3 months",
+        topics: [
+          "How AI Models Work",
+          "Training Data Bias",
+          "Evaluation Metrics",
+          "Basic Statistics",
+        ],
+      },
+      {
+        phase: 2,
+        title: "Responsible AI",
+        duration: "3-4 months",
+        topics: [
+          "Fairness Techniques",
+          "Transparency & Explainability",
+          "Privacy Preservation",
+          "Safety Testing",
+        ],
+      },
+      {
+        phase: 3,
+        title: "Policy & Governance",
+        duration: "3 months",
+        topics: [
+          "AI Regulations",
+          "Model Auditing",
+          "Documentation Standards",
+          "Risk Frameworks",
+        ],
+      },
+      {
+        phase: 4,
+        title: "Applied Practice",
+        duration: "Ongoing",
+        topics: [
+          "Ethics Review Process",
+          "Red Teaming",
+          "Incident Response",
+          "Governance Playbooks",
+        ],
+      },
+    ],
+    tools: [
+      "Jupyter",
+      "Python",
+      "Notion",
+      "Excel",
+      "Policy Templates",
+      "Figma",
+      "Miro",
+      "Docs",
+    ],
+    companies: [
+      "OpenAI",
+      "Anthropic",
+      "Google",
+      "Microsoft",
+      "Meta",
+      "Partnership on AI",
+      "OECD",
+      "UNESCO",
+    ],
+    prerequisites: [
+      "Ethics or policy interest",
+      "Clear writing skills",
+      "Ability to work across teams",
+    ],
+  },
+  {
     title: "Data Scientist",
     slug: "data-scientist",
     description:
@@ -540,6 +718,362 @@ const careerData = [
       "Strong communication",
     ],
   },
+  {
+    title: "Software Engineer",
+    slug: "software-engineer",
+    description:
+      "Build products, APIs, and systems that power everyday digital experiences. Focus on clean code, scalable architecture, and shipping features users love.",
+    icon: "FaCode",
+    color: "#4B9FFF",
+    salaryRange: { min: 105000, max: 190000 },
+    demandLevel: "Very High",
+    skills: [
+      { name: "Programming Fundamentals", level: "Advanced" },
+      { name: "Data Structures & Algorithms", level: "Advanced" },
+      { name: "System Design", level: "Intermediate" },
+      { name: "Databases", level: "Intermediate" },
+      { name: "Testing & Debugging", level: "Advanced" },
+      { name: "APIs", level: "Advanced" },
+    ],
+    roadmap: [
+      {
+        phase: 1,
+        title: "Programming Foundation",
+        duration: "2-3 months",
+        topics: [
+          "Choose a Language",
+          "Variables & Control Flow",
+          "Functions & Modules",
+          "Git Basics",
+        ],
+      },
+      {
+        phase: 2,
+        title: "Core CS Skills",
+        duration: "3-4 months",
+        topics: [
+          "Data Structures",
+          "Algorithms",
+          "Databases & SQL",
+          "HTTP & APIs",
+        ],
+      },
+      {
+        phase: 3,
+        title: "Building Products",
+        duration: "3-4 months",
+        topics: [
+          "Frontend Basics",
+          "Backend Basics",
+          "Authentication",
+          "Testing",
+        ],
+      },
+      {
+        phase: 4,
+        title: "Engineering at Scale",
+        duration: "Ongoing",
+        topics: [
+          "System Design",
+          "Performance Optimization",
+          "Cloud Deployment",
+          "Observability",
+        ],
+      },
+    ],
+    tools: [
+      "VS Code",
+      "Git",
+      "Docker",
+      "Postman",
+      "Node.js",
+      "React",
+      "PostgreSQL",
+      "Jest",
+    ],
+    companies: [
+      "Google",
+      "Microsoft",
+      "Amazon",
+      "Meta",
+      "Apple",
+      "Stripe",
+      "Shopify",
+      "Atlassian",
+    ],
+    prerequisites: [
+      "Logical thinking",
+      "Coding interest",
+      "Problem-solving mindset",
+    ],
+  },
+  {
+    title: "Cybersecurity Analyst",
+    slug: "cybersecurity-analyst",
+    description:
+      "Defend systems, detect threats, and investigate suspicious activity. Help organizations protect users, data, and infrastructure from evolving attacks.",
+    icon: "FaShieldAlt",
+    color: "#FF7A59",
+    salaryRange: { min: 110000, max: 205000 },
+    demandLevel: "Very High",
+    skills: [
+      { name: "Security Fundamentals", level: "Advanced" },
+      { name: "Networking", level: "Advanced" },
+      { name: "Threat Detection", level: "Advanced" },
+      { name: "Incident Response", level: "Intermediate" },
+      { name: "Scripting", level: "Intermediate" },
+      { name: "Risk Analysis", level: "Advanced" },
+    ],
+    roadmap: [
+      {
+        phase: 1,
+        title: "Security Foundations",
+        duration: "2-3 months",
+        topics: [
+          "Networking Basics",
+          "Operating Systems Security",
+          "Security Principles",
+          "Threat Landscape",
+        ],
+      },
+      {
+        phase: 2,
+        title: "Defensive Skills",
+        duration: "3-4 months",
+        topics: [
+          "SIEM Tools",
+          "Vulnerability Scanning",
+          "Log Analysis",
+          "Endpoint Security",
+        ],
+      },
+      {
+        phase: 3,
+        title: "Incident Response",
+        duration: "3 months",
+        topics: [
+          "Phishing Analysis",
+          "Malware Basics",
+          "Digital Forensics",
+          "Incident Playbooks",
+        ],
+      },
+      {
+        phase: 4,
+        title: "Security Operations",
+        duration: "Ongoing",
+        topics: [
+          "Cloud Security",
+          "Policy & Compliance",
+          "Risk Management",
+          "Security Automation",
+        ],
+      },
+    ],
+    tools: [
+      "Wireshark",
+      "Splunk",
+      "Nmap",
+      "Burp Suite",
+      "Kali Linux",
+      "Python",
+      "SIEM",
+      "Git",
+    ],
+    companies: [
+      "CrowdStrike",
+      "Palo Alto Networks",
+      "Microsoft",
+      "Google",
+      "Cisco",
+      "Cloudflare",
+      "Okta",
+      "Zscaler",
+    ],
+    prerequisites: [
+      "Networking basics",
+      "Attention to detail",
+      "Interest in defense and risk",
+    ],
+  },
+  {
+    title: "Cloud Architect",
+    slug: "cloud-architect",
+    description:
+      "Design scalable cloud systems and the infrastructure behind modern products. Balance cost, reliability, security, and performance across deployments.",
+    icon: "FaCloud",
+    color: "#36C2FF",
+    salaryRange: { min: 125000, max: 220000 },
+    demandLevel: "Very High",
+    skills: [
+      { name: "Cloud Platforms", level: "Advanced" },
+      { name: "Networking", level: "Advanced" },
+      { name: "Infrastructure as Code", level: "Advanced" },
+      { name: "Security", level: "Intermediate" },
+      { name: "Cost Optimization", level: "Intermediate" },
+      { name: "Reliability Engineering", level: "Advanced" },
+    ],
+    roadmap: [
+      {
+        phase: 1,
+        title: "Cloud Basics",
+        duration: "2-3 months",
+        topics: [
+          "Cloud Service Models",
+          "Networking Fundamentals",
+          "Identity & Access",
+          "Compute and Storage",
+        ],
+      },
+      {
+        phase: 2,
+        title: "Infrastructure Design",
+        duration: "3-4 months",
+        topics: [
+          "Virtual Networks",
+          "Load Balancing",
+          "Autoscaling",
+          "Infrastructure as Code",
+        ],
+      },
+      {
+        phase: 3,
+        title: "Reliability & Security",
+        duration: "3 months",
+        topics: [
+          "High Availability",
+          "Disaster Recovery",
+          "Cloud Security",
+          "Monitoring",
+        ],
+      },
+      {
+        phase: 4,
+        title: "Scaling Organizations",
+        duration: "Ongoing",
+        topics: [
+          "Cost Governance",
+          "Platform Engineering",
+          "Multi-cloud Strategy",
+          "Performance Tuning",
+        ],
+      },
+    ],
+    tools: [
+      "AWS",
+      "Azure",
+      "GCP",
+      "Terraform",
+      "Kubernetes",
+      "Docker",
+      "Prometheus",
+      "Grafana",
+    ],
+    companies: [
+      "Amazon",
+      "Microsoft",
+      "Google",
+      "Netflix",
+      "Salesforce",
+      "Capital One",
+      "Datadog",
+      "Snowflake",
+    ],
+    prerequisites: [
+      "Cloud basics",
+      "Networking knowledge",
+      "Interest in infrastructure",
+    ],
+  },
+  {
+    title: "UX/UI Designer",
+    slug: "ux-ui-designer",
+    description:
+      "Craft intuitive digital experiences that people enjoy using. Work across research, wireframes, prototypes, and visual design to solve real user problems.",
+    icon: "FaPalette",
+    color: "#FF9F1C",
+    salaryRange: { min: 90000, max: 170000 },
+    demandLevel: "High",
+    skills: [
+      { name: "User Research", level: "Advanced" },
+      { name: "Wireframing & Prototyping", level: "Advanced" },
+      { name: "Visual Design", level: "Advanced" },
+      { name: "Accessibility", level: "Intermediate" },
+      { name: "Design Systems", level: "Intermediate" },
+      { name: "Communication", level: "Advanced" },
+    ],
+    roadmap: [
+      {
+        phase: 1,
+        title: "Design Foundations",
+        duration: "2 months",
+        topics: [
+          "Design Principles",
+          "Color & Typography",
+          "UX Basics",
+          "Accessibility Basics",
+        ],
+      },
+      {
+        phase: 2,
+        title: "Research & Ideation",
+        duration: "2-3 months",
+        topics: [
+          "User Interviews",
+          "Personas & Journeys",
+          "Problem Framing",
+          "Information Architecture",
+        ],
+      },
+      {
+        phase: 3,
+        title: "Prototyping",
+        duration: "3 months",
+        topics: [
+          "Wireframes",
+          "Interactive Prototypes",
+          "Usability Testing",
+          "Iteration",
+        ],
+      },
+      {
+        phase: 4,
+        title: "Design Systems & Delivery",
+        duration: "Ongoing",
+        topics: [
+          "Components & Tokens",
+          "Handoff to Engineering",
+          "Design Critique",
+          "Portfolio Building",
+        ],
+      },
+    ],
+    tools: [
+      "Figma",
+      "FigJam",
+      "Adobe XD",
+      "Miro",
+      "Notion",
+      "Maze",
+      "Canva",
+      "Lottie",
+    ],
+    companies: [
+      "Apple",
+      "Google",
+      "Adobe",
+      "Figma",
+      "Airbnb",
+      "Canva",
+      "Shopify",
+      "Spotify",
+    ],
+    prerequisites: [
+      "Visual curiosity",
+      "Empathy for users",
+      "Storytelling skills",
+    ],
+  },
 ];
 
 const resourceData = [
@@ -766,168 +1300,274 @@ const resourceData = [
 
 const quizData = [
   {
-    question: "What excites you most about AI?",
+    question: "What kind of work gives you the most energy?",
     category: "Interest",
     options: [
       {
-        text: "Building systems that learn from data",
-        careerWeights: { "ml-engineer": 3, "data-scientist": 1 },
+        text: "Building useful products and features",
+        careerWeights: { "software-engineer": 3, "cloud-architect": 1 },
       },
       {
-        text: "Understanding hidden patterns in data",
-        careerWeights: { "data-scientist": 3, "ml-engineer": 1 },
-      },
-      {
-        text: "Pushing boundaries of what machines can do",
-        careerWeights: { "ai-researcher": 3, "nlp-engineer": 1 },
-      },
-      {
-        text: "Making machines understand language",
-        careerWeights: { "nlp-engineer": 3, "ai-researcher": 1 },
-      },
-    ],
-  },
-  {
-    question: "How do you feel about mathematics?",
-    category: "Skills",
-    options: [
-      {
-        text: "I love advanced math — the more abstract the better",
-        careerWeights: { "ai-researcher": 3, "ml-engineer": 2 },
-      },
-      {
-        text: "I enjoy applied math for problem solving",
-        careerWeights: { "ml-engineer": 3, "data-scientist": 2 },
-      },
-      {
-        text: "I can handle the basics but prefer practical work",
-        careerWeights: {
-          "nlp-engineer": 2,
-          "cv-engineer": 2,
-          "data-scientist": 1,
-        },
-      },
-      {
-        text: "I prefer strategy and communication",
-        careerWeights: { "ai-product-manager": 3, "data-scientist": 1 },
-      },
-    ],
-  },
-  {
-    question: "What's your preferred work style?",
-    category: "Preference",
-    options: [
-      {
-        text: "Writing code and building production systems",
-        careerWeights: {
-          "ml-engineer": 3,
-          "cv-engineer": 2,
-          "nlp-engineer": 2,
-        },
-      },
-      {
-        text: "Analyzing data and creating visualizations",
+        text: "Finding patterns in data and making decisions from them",
         careerWeights: { "data-scientist": 3, "ai-product-manager": 1 },
       },
       {
-        text: "Reading papers and running experiments",
-        careerWeights: { "ai-researcher": 3, "nlp-engineer": 1 },
-      },
-      {
-        text: "Leading teams and defining product direction",
-        careerWeights: { "ai-product-manager": 3, "data-scientist": 1 },
-      },
-    ],
-  },
-  {
-    question: "Which project sounds most interesting?",
-    category: "Projects",
-    options: [
-      {
-        text: "Building a recommendation engine for millions of users",
-        careerWeights: { "ml-engineer": 3, "data-scientist": 2 },
-      },
-      {
-        text: "Creating a chatbot that truly understands context",
-        careerWeights: { "nlp-engineer": 3, "ai-researcher": 2 },
-      },
-      {
-        text: "Developing self-driving car perception systems",
-        careerWeights: { "cv-engineer": 3, "ml-engineer": 1 },
-      },
-      {
-        text: "Defining the AI strategy for a Fortune 500 company",
-        careerWeights: { "ai-product-manager": 3, "data-scientist": 1 },
-      },
-    ],
-  },
-  {
-    question: "What's your educational background closest to?",
-    category: "Background",
-    options: [
-      {
-        text: "Computer Science / Software Engineering",
+        text: "Protecting systems and reducing risk",
         careerWeights: {
-          "ml-engineer": 2,
-          "cv-engineer": 2,
-          "nlp-engineer": 2,
+          "cybersecurity-analyst": 3,
+          "cloud-architect": 1,
         },
       },
       {
-        text: "Mathematics / Statistics / Physics",
-        careerWeights: { "ai-researcher": 3, "data-scientist": 2 },
-      },
-      {
-        text: "Business / Economics / MBA",
-        careerWeights: { "ai-product-manager": 3, "data-scientist": 2 },
-      },
-      {
-        text: "Linguistics / Psychology / Cognitive Science",
-        careerWeights: { "nlp-engineer": 3, "ai-researcher": 1 },
+        text: "Designing experiences people enjoy using",
+        careerWeights: { "ux-ui-designer": 3, "ai-product-manager": 1 },
       },
     ],
   },
   {
-    question: "Where do you see yourself in 5 years?",
-    category: "Goals",
+    question: "Which project would you choose first?",
+    category: "Projects",
     options: [
       {
-        text: "Leading an ML engineering team at a tech giant",
-        careerWeights: { "ml-engineer": 3, "cv-engineer": 1 },
+        text: "A full-stack app that solves a real user problem",
+        careerWeights: { "software-engineer": 3, "cloud-architect": 1 },
       },
       {
-        text: "Publishing influential research at top conferences",
-        careerWeights: { "ai-researcher": 3, "nlp-engineer": 1 },
+        text: "A dashboard that helps teams understand data",
+        careerWeights: { "data-scientist": 3, "ai-product-manager": 1 },
       },
       {
-        text: "Being the go-to data expert in my organization",
-        careerWeights: { "data-scientist": 3, "ml-engineer": 1 },
+        text: "A security audit that finds hidden vulnerabilities",
+        careerWeights: {
+          "cybersecurity-analyst": 3,
+          "cloud-architect": 1,
+        },
       },
       {
-        text: "Shaping AI products used by millions",
-        careerWeights: { "ai-product-manager": 3, "nlp-engineer": 1 },
+        text: "A polished prototype that improves the user journey",
+        careerWeights: {
+          "ux-ui-designer": 3,
+          "software-engineer": 1,
+        },
       },
     ],
   },
   {
-    question: "Which skill would you most like to master?",
+    question: "How do you prefer to solve problems?",
+    category: "Preference",
+    options: [
+      {
+        text: "With code, debugging, and shipping features",
+        careerWeights: {
+          "software-engineer": 3,
+          "cloud-architect": 2,
+        },
+      },
+      {
+        text: "With data, dashboards, and trend analysis",
+        careerWeights: { "data-scientist": 3, "ai-product-manager": 1 },
+      },
+      {
+        text: "With research, experimentation, and model testing",
+        careerWeights: { "ai-researcher": 3, "ml-engineer": 1 },
+      },
+      {
+        text: "With collaboration, strategy, and design thinking",
+        careerWeights: {
+          "ai-product-manager": 3,
+          "ux-ui-designer": 2,
+          "cybersecurity-analyst": 1,
+        },
+      },
+    ],
+  },
+  {
+    question: "What kind of environment suits you best?",
+    category: "Environment",
+    options: [
+      {
+        text: "A fast-moving team shipping products every week",
+        careerWeights: {
+          "software-engineer": 3,
+          "ai-product-manager": 1,
+        },
+      },
+      {
+        text: "A reliability-focused team managing systems at scale",
+        careerWeights: { "cloud-architect": 3, "software-engineer": 1 },
+      },
+      {
+        text: "A research-heavy team testing ideas and hypotheses",
+        careerWeights: { "ai-researcher": 3, "ml-engineer": 1 },
+      },
+      {
+        text: "A collaborative product team focused on user needs",
+        careerWeights: { "ux-ui-designer": 3, "ai-product-manager": 1 },
+      },
+    ],
+  },
+  {
+    question: "Which skill would you most like to build?",
     category: "SkillGoals",
     options: [
       {
-        text: "Building & deploying ML pipelines at scale",
-        careerWeights: { "ml-engineer": 3, "data-scientist": 1 },
+        text: "Software development and architecture",
+        careerWeights: {
+          "software-engineer": 3,
+          "cloud-architect": 2,
+        },
       },
       {
-        text: "Creating photorealistic images with AI",
-        careerWeights: { "cv-engineer": 3, "ai-researcher": 2 },
+        text: "Data analysis and decision-making",
+        careerWeights: { "data-scientist": 3, "ai-product-manager": 1 },
       },
       {
-        text: "Understanding how large language models work inside",
-        careerWeights: { "nlp-engineer": 3, "ai-researcher": 2 },
+        text: "Security analysis and threat detection",
+        careerWeights: {
+          "cybersecurity-analyst": 3,
+          "cloud-architect": 1,
+        },
       },
       {
-        text: "Turning complex AI concepts into business value",
-        careerWeights: { "ai-product-manager": 3, "data-scientist": 1 },
+        text: "Design systems and user experiences",
+        careerWeights: { "ux-ui-designer": 3, "ai-product-manager": 1 },
+      },
+    ],
+  },
+  {
+    question: "What kind of impact motivates you most?",
+    category: "Goals",
+    options: [
+      {
+        text: "Helping people use products more easily",
+        careerWeights: { "ux-ui-designer": 3, "software-engineer": 1 },
+      },
+      {
+        text: "Keeping systems safe, stable, and reliable",
+        careerWeights: { "cybersecurity-analyst": 3, "cloud-architect": 1 },
+      },
+      {
+        text: "Turning data into decisions",
+        careerWeights: { "data-scientist": 3, "ai-product-manager": 1 },
+      },
+      {
+        text: "Building intelligent systems that improve over time",
+        careerWeights: { "ml-engineer": 3, "ai-researcher": 2 },
+      },
+    ],
+  },
+  {
+    question: "How would you like to spend your learning time?",
+    category: "Learning Style",
+    options: [
+      {
+        text: "Building apps, APIs, and features end to end",
+        careerWeights: { "software-engineer": 3, "cloud-architect": 1 },
+      },
+      {
+        text: "Learning cloud platforms, deployment, and automation",
+        careerWeights: { "cloud-architect": 3, "software-engineer": 1 },
+      },
+      {
+        text: "Practicing security tools and incident response",
+        careerWeights: { "cybersecurity-analyst": 3, "cloud-architect": 1 },
+      },
+      {
+        text: "Testing prototypes, user flows, and visual design",
+        careerWeights: {
+          "ux-ui-designer": 3,
+          "ai-product-manager": 1,
+        },
+      },
+    ],
+  },
+  {
+    question: "Which non-AI path sounds most like your ideal workday?",
+    category: "Direction",
+    options: [
+      {
+        text: "Building apps, APIs, and backend systems",
+        careerWeights: { "software-engineer": 3, "cloud-architect": 1 },
+      },
+      {
+        text: "Protecting systems and investigating threats",
+        careerWeights: { "cybersecurity-analyst": 3, "cloud-architect": 1 },
+      },
+      {
+        text: "Designing intuitive, polished digital experiences",
+        careerWeights: { "ux-ui-designer": 3, "software-engineer": 1 },
+      },
+      {
+        text: "Designing scalable cloud platforms and automation",
+        careerWeights: { "cloud-architect": 3, "software-engineer": 1 },
+      },
+    ],
+  },
+  {
+    question: "Which kind of challenge sounds most rewarding?",
+    category: "Challenge",
+    options: [
+      {
+        text: "Solving tricky coding and system bugs",
+        careerWeights: {
+          "software-engineer": 3,
+          "cloud-architect": 1,
+        },
+      },
+      {
+        text: "Stopping attacks and investigating suspicious activity",
+        careerWeights: {
+          "cybersecurity-analyst": 3,
+          "software-engineer": 1,
+        },
+      },
+      {
+        text: "Turning user feedback into a simpler interface",
+        careerWeights: {
+          "ux-ui-designer": 3,
+          "software-engineer": 1,
+        },
+      },
+      {
+        text: "Improving uptime, deployment, and infrastructure quality",
+        careerWeights: {
+          "cloud-architect": 3,
+          "software-engineer": 1,
+        },
+      },
+    ],
+  },
+  {
+    question: "What would you most like to build?",
+    category: "Build",
+    options: [
+      {
+        text: "A scalable app or service users rely on daily",
+        careerWeights: {
+          "software-engineer": 3,
+          "cloud-architect": 1,
+        },
+      },
+      {
+        text: "A secure environment that protects data and systems",
+        careerWeights: {
+          "cybersecurity-analyst": 3,
+          "cloud-architect": 1,
+        },
+      },
+      {
+        text: "A seamless digital experience that feels effortless",
+        careerWeights: {
+          "ux-ui-designer": 3,
+          "software-engineer": 1,
+        },
+      },
+      {
+        text: "A cloud platform that scales reliably under load",
+        careerWeights: {
+          "cloud-architect": 3,
+          "software-engineer": 1,
+        },
       },
     ],
   },
@@ -961,4 +1601,4 @@ async function seedQuiz() {
   console.log("Quiz questions seeded!");
 }
 
-module.exports = { seedCareers, seedResources, seedQuiz };
+module.exports = { seedCareers, seedResources, seedQuiz, quizData };

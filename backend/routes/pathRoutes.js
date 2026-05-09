@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const UserProfile = require("../models/UserProfile");
+const authenticateToken = require("../middleware/authenticateToken");
 const {
   generateCareerPath,
   enrichPathWithResources,
@@ -11,14 +12,12 @@ const {
 /**
  * Generate a new career path based on quiz answers
  * POST /api/paths/generate
+ * Protected route - requires authentication
  */
-router.post("/generate", async (req, res) => {
+router.post("/generate", authenticateToken, async (req, res) => {
   try {
-    const { quizAnswers, userId, matchPercent } = req.body;
-
-    if (!userId) {
-      return res.status(400).json({ message: "userId is required" });
-    }
+    const { quizAnswers, matchPercent, recommendedCareerSlug } = req.body;
+    const userId = req.user.userId; // Get from authenticated user
 
     if (!quizAnswers || quizAnswers.length === 0) {
       return res.status(400).json({ message: "quizAnswers are required" });
@@ -29,13 +28,18 @@ router.post("/generate", async (req, res) => {
     console.log("Step 1: Extracted interests:", interests);
 
     // Generate career path using Gemini
-    let careerPath = await generateCareerPath(quizAnswers, interests);
+    let careerPath = await generateCareerPath(
+      quizAnswers,
+      interests,
+      recommendedCareerSlug,
+    );
     console.log("Step 2: Generated career path:", careerPath.careerTitle);
 
     // Get career slug for resource matching
     const careerSlug = careerPath.careerTitle
       .toLowerCase()
-      .replace(/\s+/g, "-");
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
     console.log("Step 3: Career slug:", careerSlug);
 
     // Enrich path with resources for each topic
@@ -103,12 +107,13 @@ router.post("/generate", async (req, res) => {
 });
 
 /**
- * Get all generated paths for a user
- * GET /api/paths/user/:userId
+ * Get all generated paths for authenticated user
+ * GET /api/paths/user/me
+ * Protected route - requires authentication
  */
-router.get("/user/:userId", async (req, res) => {
+router.get("/user/me", authenticateToken, async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = req.user.userId;
     const userProfile = await UserProfile.findOne({ userId });
 
     if (!userProfile) {
@@ -150,13 +155,17 @@ router.get("/user/:userId", async (req, res) => {
 });
 
 /**
- * Get a specific generated path
+ * Get a specific generated path (only if user owns it)
  * GET /api/paths/:pathId
+ * Protected route - requires authentication
  */
-router.get("/:pathId", async (req, res) => {
+router.get("/:pathId", authenticateToken, async (req, res) => {
   try {
     const { pathId } = req.params;
+    const userId = req.user.userId;
+
     const userProfile = await UserProfile.findOne({
+      userId,
       "generatedPaths.pathId": pathId,
     });
 
@@ -177,25 +186,29 @@ router.get("/:pathId", async (req, res) => {
 });
 
 /**
- * Update path customizations
+ * Update path customizations (only if user owns it)
  * PUT /api/paths/:pathId
+ * Protected route - requires authentication
  */
-router.put("/:pathId", async (req, res) => {
+router.put("/:pathId", authenticateToken, async (req, res) => {
   try {
     const { pathId } = req.params;
+    const userId = req.user.userId;
     const { customizations, completedTopics } = req.body;
 
-    const userProfile = await UserProfile.findOne({
-      "generatedPaths.pathId": pathId,
-    });
+    const userProfile = await UserProfile.findOne({ userId });
 
     if (!userProfile) {
-      return res.status(404).json({ message: "Path not found" });
+      return res.status(404).json({ message: "User profile not found" });
     }
 
     const pathIndex = userProfile.generatedPaths.findIndex(
       (p) => p.pathId.toString() === pathId,
     );
+
+    if (pathIndex === -1) {
+      return res.status(404).json({ message: "Path not found" });
+    }
 
     if (customizations) {
       userProfile.generatedPaths[pathIndex].customizations = customizations;
@@ -219,17 +232,14 @@ router.put("/:pathId", async (req, res) => {
 });
 
 /**
- * Delete a generated path
+ * Delete a generated path (only if user owns it)
  * DELETE /api/paths/:pathId
+ * Protected route - requires authentication
  */
-router.delete("/:pathId", async (req, res) => {
+router.delete("/:pathId", authenticateToken, async (req, res) => {
   try {
     const { pathId } = req.params;
-    const userId = req.body.userId;
-
-    if (!userId) {
-      return res.status(400).json({ message: "userId is required" });
-    }
+    const userId = req.user.userId;
 
     const userProfile = await UserProfile.findOne({ userId });
 
@@ -237,11 +247,17 @@ router.delete("/:pathId", async (req, res) => {
       return res.status(404).json({ message: "User profile not found" });
     }
 
-    userProfile.generatedPaths = userProfile.generatedPaths.filter(
-      (p) => p.pathId.toString() !== pathId,
+    const pathIndex = userProfile.generatedPaths.findIndex(
+      (p) => p.pathId.toString() === pathId,
     );
 
+    if (pathIndex === -1) {
+      return res.status(404).json({ message: "Path not found" });
+    }
+
+    userProfile.generatedPaths.splice(pathIndex, 1);
     await userProfile.save();
+
     res.json({ message: "Path deleted successfully" });
   } catch (error) {
     console.error("Error deleting path:", error);

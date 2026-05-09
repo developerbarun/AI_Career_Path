@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
@@ -20,10 +20,49 @@ export default function GeneratedPathDetail() {
   const [expandedTopics, setExpandedTopics] = useState(new Set());
   const [completedTopics, setCompletedTopics] = useState([]);
   const [saveNotice, setSaveNotice] = useState(null);
+  const lastSavedKeyRef = useRef("");
 
   useEffect(() => {
     loadPath();
   }, [pathId]);
+
+  useEffect(() => {
+    if (!path) return;
+
+    const completedKey = JSON.stringify([...completedTopics].sort());
+    if (completedKey === lastSavedKeyRef.current) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        setSaveNotice({
+          type: "info",
+          message: "Saving progress automatically...",
+        });
+
+        const completed = completedTopics.map((ct) => {
+          const [phase, ...topicParts] = ct.split("-");
+          return { phase: parseInt(phase), topic: topicParts.join("-") };
+        });
+
+        await updatePathCustomizations(pathId, path.customizations, completed);
+        lastSavedKeyRef.current = completedKey;
+        setSaveNotice({
+          type: "success",
+          message: "Progress saved automatically.",
+        });
+      } catch (error) {
+        console.error("Error auto-saving progress:", error);
+        setSaveNotice({
+          type: "error",
+          message: "Auto-save failed. Your next change will try again.",
+        });
+      }
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [completedTopics, path, pathId]);
 
   useEffect(() => {
     if (!saveNotice) return;
@@ -35,9 +74,10 @@ export default function GeneratedPathDetail() {
     try {
       const data = await getGeneratedPath(pathId);
       setPath(data);
-      setCompletedTopics(
-        data.completedTopics?.map((ct) => `${ct.phase}-${ct.topic}`) || [],
-      );
+      const initialCompleted =
+        data.completedTopics?.map((ct) => `${ct.phase}-${ct.topic}`) || [];
+      lastSavedKeyRef.current = JSON.stringify([...initialCompleted].sort());
+      setCompletedTopics(initialCompleted);
       setLoading(false);
     } catch (error) {
       console.error("Error loading path:", error);
@@ -60,27 +100,6 @@ export default function GeneratedPathDetail() {
     setCompletedTopics((prev) =>
       prev.includes(key) ? prev.filter((t) => t !== key) : [...prev, key],
     );
-  };
-
-  const saveProgress = async () => {
-    try {
-      const completed = completedTopics.map((ct) => {
-        const [phase, ...topicParts] = ct.split("-");
-        return { phase: parseInt(phase), topic: topicParts.join("-") };
-      });
-
-      await updatePathCustomizations(pathId, path.customizations, completed);
-      setSaveNotice({
-        type: "success",
-        message: "Progress saved successfully.",
-      });
-    } catch (error) {
-      console.error("Error saving progress:", error);
-      setSaveNotice({
-        type: "error",
-        message: "Failed to save progress. Please try again.",
-      });
-    }
   };
 
   if (loading) {
@@ -145,18 +164,20 @@ export default function GeneratedPathDetail() {
                 </span>
               )}
             </div>
-            <button
-              className="btn-secondary"
-              onClick={saveProgress}
-              style={{ marginTop: "1rem" }}
-            >
-              Save Progress
-            </button>
             {saveNotice && (
               <div className={`inline-notice ${saveNotice.type}`}>
                 {saveNotice.message}
               </div>
             )}
+            <div
+              style={{
+                marginTop: "1rem",
+                fontSize: "0.9rem",
+                color: "var(--text-secondary)",
+              }}
+            >
+              Progress saves automatically when you tick a topic.
+            </div>
           </div>
         </motion.div>
       </div>

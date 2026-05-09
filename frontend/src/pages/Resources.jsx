@@ -30,7 +30,7 @@ export default function Resources() {
           <h2>Learning Resources</h2>
           <p>
             Curated courses, books, tutorials, and communities to accelerate
-            your AI career
+            your career growth
           </p>
         </div>
 

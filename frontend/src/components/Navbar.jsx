@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { FaBrain } from "react-icons/fa";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaBrain, FaSignOutAlt } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -19,6 +22,26 @@ export default function Navbar() {
   }, [location.pathname]);
 
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = () => {
+    logout();
+    setMenuOpen(false);
+  };
+
+  const handleDashboardClick = (event) => {
+    if (isAuthenticated) {
+      return;
+    }
+
+    event.preventDefault();
+    setMenuOpen(false);
+    navigate("/login", {
+      state: {
+        from: "/dashboard",
+        message: "Please log in to view the dashboard.",
+      },
+    });
+  };
 
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
@@ -51,6 +74,7 @@ export default function Navbar() {
         <li>
           <Link
             to="/dashboard"
+            onClick={handleDashboardClick}
             className={isActive("/dashboard") ? "active" : ""}
           >
             Dashboard
@@ -61,6 +85,47 @@ export default function Navbar() {
             <button className="nav-cta">Take Quiz</button>
           </Link>
         </li>
+        {isAuthenticated ? (
+          <>
+            <li
+              style={{
+                borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+                paddingTop: "0.5rem",
+              }}
+            >
+              <span
+                style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}
+              >
+                Welcome, {user?.name || user?.email}
+              </span>
+            </li>
+            <li>
+              <button
+                onClick={handleLogout}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--text-primary)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  fontSize: "0.9rem",
+                  padding: "0.5rem 0",
+                }}
+              >
+                <FaSignOutAlt />
+                Logout
+              </button>
+            </li>
+          </>
+        ) : (
+          <li>
+            <Link to="/login">
+              <button className="nav-cta">Sign In</button>
+            </Link>
+          </li>
+        )}
       </ul>
 
       <button

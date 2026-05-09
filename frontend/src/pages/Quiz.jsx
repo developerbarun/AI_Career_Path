@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaArrowRight, FaRedo } from "react-icons/fa";
 import { fetchQuiz, generateCareerPath } from "../services/api";
 import { fallbackQuiz, careerNames } from "../data/fallbackData";
-import { getOrCreateGuestUserId } from "../utils/guestUser";
 
 export default function Quiz() {
   const navigate = useNavigate();
@@ -20,7 +19,10 @@ export default function Quiz() {
   const getPathIdValue = (path) => {
     if (!path || !path.pathId) return "";
     if (typeof path.pathId === "string") return path.pathId;
-    if (typeof path.pathId === "object" && typeof path.pathId.$oid === "string") {
+    if (
+      typeof path.pathId === "object" &&
+      typeof path.pathId.$oid === "string"
+    ) {
       return path.pathId.$oid;
     }
     if (typeof path.pathId.toString === "function") {
@@ -76,31 +78,39 @@ export default function Quiz() {
     setResults(sorted);
 
     const topScore = sorted[0]?.score || 0;
+    const topCareerSlug = sorted[0]?.career || "";
     const computedMatchPercent =
       questions.length > 0
         ? Math.min(99, Math.round((topScore / (questions.length * 3)) * 100))
         : 0;
 
     // Trigger AI path generation
-    triggerPathGeneration(allAnswers, computedMatchPercent);
+    triggerPathGeneration(allAnswers, computedMatchPercent, topCareerSlug);
   };
 
-  const triggerPathGeneration = async (allAnswers, matchPercent) => {
+  const triggerPathGeneration = async (
+    allAnswers,
+    matchPercent,
+    recommendedCareerSlug,
+  ) => {
     try {
       setGeneratingPath(true);
-      const userId = getOrCreateGuestUserId();
 
       // Prepare answers for API
       const quizAnswersForAPI = allAnswers.map((answer, index) => ({
         questionIndex: index,
         selectedText: answer.text,
-        selectedOption: answer.text,
+        selectedOption: {
+          text: answer.text,
+          careerWeights: answer.careerWeights,
+        },
+        careerWeights: answer.careerWeights,
       }));
 
       const response = await generateCareerPath(
         quizAnswersForAPI,
-        userId,
         matchPercent,
+        recommendedCareerSlug,
       );
       setGeneratedPath(response.path);
       setGeneratingPath(false);
@@ -291,7 +301,7 @@ export default function Quiz() {
       >
         <div className="section-header" style={{ marginBottom: "2rem" }}>
           <span className="section-tag">Career Quiz</span>
-          <h2>Find Your AI Career</h2>
+          <h2>Find Your Career Path</h2>
         </div>
 
         <div className="quiz-progress">

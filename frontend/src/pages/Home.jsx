@@ -34,19 +34,19 @@ export default function Home() {
         >
           <div className="hero-badge">
             <span className="pulse" />
-            The Future of AI Careers — 2026 Edition
+            The Future of Career Discovery — 2026 Edition
           </div>
 
           <h1>
             Navigate Your
             <br />
-            <span className="gradient-text">AI Career Path</span>
+            <span className="gradient-text">Career Path</span>
           </h1>
 
           <p>
-            Discover the most in-demand AI roles, learn exactly what skills you
-            need, follow step-by-step roadmaps, and find your perfect career
-            match with our interactive quiz.
+            Discover in-demand roles across AI, software, cloud, security, and
+            design. Learn the skills you need, follow step-by-step roadmaps, and
+            find your best career match with our interactive quiz.
           </p>
 
           <div className="hero-buttons">
@@ -96,7 +96,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
             >
-              <div className="number">7</div>
+              <div className="number">10</div>
               <div className="label">Quiz Questions</div>
             </motion.div>
           </div>
@@ -107,10 +107,10 @@ export default function Home() {
       <section className="section">
         <div className="section-header">
           <span className="section-tag">Career Paths</span>
-          <h2>Choose Your AI Destiny</h2>
+          <h2>Choose Your Direction</h2>
           <p>
-            Explore the most exciting and lucrative career paths in artificial
-            intelligence
+            Explore exciting and practical career paths across technology and
+            product disciplines
           </p>
         </div>
 

@@ -1,40 +1,62 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { FaTrophy, FaTasks, FaChartPie, FaRedo } from "react-icons/fa";
 import { useProgress } from "../context/ProgressContext";
+import { useAuth } from "../context/AuthContext";
 import { fetchCareers, getUserPaths } from "../services/api";
 import { fallbackCareers, iconMap } from "../data/fallbackData";
-import { getOrCreateGuestUserId } from "../utils/guestUser";
+import ProgressGraph from "../components/ProgressGraph";
 
 export default function Dashboard() {
   const [careers, setCareers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [generatedPaths, setGeneratedPaths] = useState([]);
   const [confirmReset, setConfirmReset] = useState(false);
-  const {
-    getCareerProgress,
-    getOverallProgress,
-    getQuizScore,
-    getAllQuizScores,
-    resetProgress,
-  } = useProgress();
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { user } = useAuth();
+  const { getCareerProgress, getQuizScore, getAllQuizScores, resetProgress } =
+    useProgress();
 
-  useEffect(() => {
-    fetchCareers()
-      .then(setCareers)
-      .catch(() => setCareers(fallbackCareers))
-      .finally(() => setLoading(false));
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const careersData = await fetchCareers();
+      setCareers(careersData);
 
-    // Load generated paths
-    const userId = getOrCreateGuestUserId();
-    getUserPaths(userId)
-      .then((data) => setGeneratedPaths(data.paths || []))
-      .catch(() => setGeneratedPaths([]));
+      try {
+        const pathsData = await getUserPaths();
+        setGeneratedPaths(pathsData.paths || []);
+      } catch (err) {
+        console.log("Failed to load paths:", err);
+        setGeneratedPaths([]);
+      }
+    } catch (err) {
+      console.log("Using fallback careers");
+      setCareers(fallbackCareers);
+      setGeneratedPaths([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const overall = getOverallProgress(careers);
+  useEffect(() => {
+    if (user) {
+      loadData();
+    }
+  }, [user, loadData]);
+
+  const selectedCareers = useMemo(
+    () =>
+      careers.filter((career) => {
+        const progress = getCareerProgress(career.slug, career.roadmap);
+        const quiz = getQuizScore(career.slug);
+        return progress.total > 0 || !!quiz;
+      }),
+    [careers, getCareerProgress, getQuizScore, refreshKey],
+  );
+
   const quizScores = getAllQuizScores();
   const quizCount = Object.keys(quizScores).length;
   const normalizedGeneratedPaths = useMemo(() => {
@@ -84,16 +106,95 @@ export default function Dashboard() {
 
     return deduped.filter((path) => Boolean(path.pathIdValue));
   }, [generatedPaths]);
+
+  const generatedProgressBySlug = useMemo(() => {
+    return normalizedGeneratedPaths.reduce((acc, path) => {
+      const slug = path.careerSlug || "";
+      if (!slug) return acc;
+
+      const completedTopics = path.completedTopics?.length || 0;
+      const totalTopics =
+        path.pathData?.phases?.reduce(
+          (sum, phase) => sum + (phase.topics?.length || 0),
+          0,
+        ) || 0;
+
+      if (!acc[slug]) {
+        acc[slug] = { completed: 0, total: 0 };
+      }
+
+      acc[slug].completed += completedTopics;
+      acc[slug].total += totalTopics;
+      return acc;
+    }, {});
+  }, [normalizedGeneratedPaths]);
+
+  const selectedSlugSet = useMemo(
+    () => new Set(selectedCareers.map((career) => career.slug)),
+    [selectedCareers],
+  );
+
   const careerProgressRows = useMemo(
     () =>
-      careers
-        .map((career) => ({
+      selectedCareers.map((career) => {
+        const localProgress = getCareerProgress(career.slug, career.roadmap);
+        const generatedProgress = generatedProgressBySlug[career.slug] || {
+          completed: 0,
+          total: 0,
+        };
+        const completed = localProgress.completed + generatedProgress.completed;
+        const total = localProgress.total + generatedProgress.total;
+
+        return {
           ...career,
-          progress: getCareerProgress(career.slug, career.roadmap),
-        }))
-        .filter((career) => career.progress.total > 0),
-    [careers, getCareerProgress],
+          progress: {
+            completed,
+            total,
+            percent: total > 0 ? Math.round((completed / total) * 100) : 0,
+          },
+        };
+      }),
+    [selectedCareers, getCareerProgress, generatedProgressBySlug],
   );
+
+  const overall = useMemo(() => {
+    const selectedOverall = careerProgressRows.reduce(
+      (acc, career) => {
+        acc.completed += career.progress.completed;
+        acc.total += career.progress.total;
+        return acc;
+      },
+      { completed: 0, total: 0 },
+    );
+
+    const generatedOnlyProgress = normalizedGeneratedPaths.reduce(
+      (acc, path) => {
+        if (selectedSlugSet.has(path.careerSlug || "")) {
+          return acc;
+        }
+
+        acc.completed += path.completedTopics?.length || 0;
+        acc.total +=
+          path.pathData?.phases?.reduce(
+            (sum, phase) => sum + (phase.topics?.length || 0),
+            0,
+          ) || 0;
+        return acc;
+      },
+      { completed: 0, total: 0 },
+    );
+
+    const totalCompleted =
+      selectedOverall.completed + generatedOnlyProgress.completed;
+    const totalTasks = selectedOverall.total + generatedOnlyProgress.total;
+
+    return {
+      completed: totalCompleted,
+      total: totalTasks,
+      percent:
+        totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0,
+    };
+  }, [careerProgressRows, normalizedGeneratedPaths, selectedSlugSet]);
   const suggestedCareer = useMemo(
     () =>
       [...careerProgressRows].sort(
@@ -122,7 +223,7 @@ export default function Dashboard() {
         <div className="section-header">
           <span className="section-tag">Dashboard</span>
           <h2>Your Learning Progress</h2>
-          <p>Track your journey across all AI career paths</p>
+          <p>Track your journey across the career paths you selected</p>
         </div>
 
         <div className="dashboard-stats">
@@ -157,6 +258,29 @@ export default function Dashboard() {
             <div className="stat-label">Quizzes Taken</div>
           </motion.div>
         </div>
+
+        {/* Progress Graph */}
+        {careerProgressRows.length > 0 ? (
+          <ProgressGraph
+            careerProgressRows={careerProgressRows}
+            overall={overall}
+          />
+        ) : (
+          <div
+            style={{
+              marginTop: "2.5rem",
+              marginBottom: "2.5rem",
+              padding: "1.5rem",
+              borderRadius: "12px",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              background: "rgba(255, 255, 255, 0.03)",
+              color: "var(--text-secondary)",
+            }}
+          >
+            Take a quiz or open a career path to start tracking progress here.
+          </div>
+        )}
+
         <div className="dashboard-insights">
           <div className="dashboard-insight-card">
             <h3>Progress insight</h3>
@@ -174,7 +298,7 @@ export default function Dashboard() {
             <p>
               {suggestedCareer
                 ? `${suggestedCareer.title} is your lowest-progress track (${suggestedCareer.progress.percent}%).`
-                : "Start with one predefined track and complete the first phase topics."}
+                : "Start with one selected track and complete the first phase topics."}
             </p>
           </div>
         </div>
@@ -238,7 +362,8 @@ export default function Dashboard() {
                               {path.pathData?.careerTitle || "Custom Path"}
                             </h3>
                             <span className="dcc-percent">
-                              {displayPercent}% {hasMatchPercent ? "Match" : "Progress"}
+                              {displayPercent}%{" "}
+                              {hasMatchPercent ? "Match" : "Progress"}
                             </span>
                           </div>
                         </div>
@@ -280,63 +405,78 @@ export default function Dashboard() {
 
         {/* Predefined Career Paths Section */}
         <h2 style={{ marginTop: "2rem", marginBottom: "1rem" }}>
-          Predefined Career Paths
+          Your Career Paths
         </h2>
-        <div className="dashboard-careers">
-          {careers.map((career, i) => {
-            const progress = getCareerProgress(career.slug, career.roadmap);
-            const quiz = getQuizScore(career.slug);
-            const Icon = iconMap[career.icon];
-            return (
-              <motion.div
-                key={career.slug}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.08 }}
-              >
-                <Link
-                  to={`/careers/${career.slug}`}
-                  className="dashboard-career-card"
+        {selectedCareers.length > 0 ? (
+          <div className="dashboard-careers">
+            {selectedCareers.map((career, i) => {
+              const progress = getCareerProgress(career.slug, career.roadmap);
+              const quiz = getQuizScore(career.slug);
+              const Icon = iconMap[career.icon];
+              return (
+                <motion.div
+                  key={career.slug}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + i * 0.08 }}
                 >
-                  <div className="dcc-header">
-                    <div
-                      className="dcc-icon"
-                      style={{
-                        background: `${career.color}20`,
-                        color: career.color,
-                      }}
-                    >
-                      {Icon && <Icon />}
+                  <Link
+                    to={`/careers/${career.slug}`}
+                    className="dashboard-career-card"
+                  >
+                    <div className="dcc-header">
+                      <div
+                        className="dcc-icon"
+                        style={{
+                          background: `${career.color}20`,
+                          color: career.color,
+                        }}
+                      >
+                        {Icon && <Icon />}
+                      </div>
+                      <div>
+                        <h3>{career.title}</h3>
+                        <span className="dcc-percent">{progress.percent}%</span>
+                      </div>
                     </div>
-                    <div>
-                      <h3>{career.title}</h3>
-                      <span className="dcc-percent">{progress.percent}%</span>
+                    <div className="dcc-progress-bar-bg">
+                      <motion.div
+                        className="dcc-progress-bar"
+                        style={{ background: career.color }}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${progress.percent}%` }}
+                        transition={{ duration: 0.8, delay: 0.2 + i * 0.08 }}
+                      />
                     </div>
-                  </div>
-                  <div className="dcc-progress-bar-bg">
-                    <motion.div
-                      className="dcc-progress-bar"
-                      style={{ background: career.color }}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progress.percent}%` }}
-                      transition={{ duration: 0.8, delay: 0.2 + i * 0.08 }}
-                    />
-                  </div>
-                  <div className="dcc-meta">
-                    <span>
-                      {progress.completed} / {progress.total} tasks
-                    </span>
-                    {quiz && (
-                      <span className="dcc-quiz-score">
-                        Quiz: {quiz.score}/{quiz.total}
+                    <div className="dcc-meta">
+                      <span>
+                        {progress.completed} / {progress.total} tasks
                       </span>
-                    )}
-                  </div>
-                </Link>
-              </motion.div>
-            );
-          })}
-        </div>
+                      {quiz && (
+                        <span className="dcc-quiz-score">
+                          Quiz: {quiz.score}/{quiz.total}
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+        ) : (
+          <div
+            style={{
+              padding: "1.5rem",
+              borderRadius: "12px",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              background: "rgba(255, 255, 255, 0.03)",
+              color: "var(--text-secondary)",
+            }}
+          >
+            No active career has been selected yet. Take a quiz or start a
+            career to make it appear here.
+          </div>
+        )}
 
         <div style={{ textAlign: "center", marginTop: "3rem" }}>
           {!confirmReset ? (

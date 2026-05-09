@@ -7,6 +7,7 @@ const careerRoutes = require("./routes/careerRoutes");
 const resourceRoutes = require("./routes/resourceRoutes");
 const quizRoutes = require("./routes/quizRoutes");
 const pathRoutes = require("./routes/pathRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
@@ -21,6 +22,7 @@ mongoose
   .catch((err) => console.log("MongoDB connection error:", err.message));
 
 // Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/careers", careerRoutes);
 app.use("/api/resources", resourceRoutes);
 app.use("/api/quiz", quizRoutes);

@@ -75,15 +75,96 @@ const careerTemplates = {
     companies: ["Tesla", "Nvidia", "Google", "Meta", "Apple"],
     prerequisites: ["Linear algebra", "Deep learning fundamentals"],
   },
+  "software-engineer": {
+    careerTitle: "Software Engineer",
+    description:
+      "Build reliable products, APIs, and services that people use every day. Focus on clean code, system design, testing, and shipping features end to end.",
+    demandLevel: "Very High",
+    salaryRange: { min: 105000, max: 190000 },
+    skills: [
+      { name: "Programming", level: "Advanced" },
+      { name: "Data Structures & Algorithms", level: "Advanced" },
+      { name: "APIs & Backend Development", level: "Advanced" },
+      { name: "Databases", level: "Intermediate" },
+      { name: "Testing & Debugging", level: "Advanced" },
+    ],
+    tools: ["JavaScript", "TypeScript", "Node.js", "React", "Git"],
+    companies: ["Google", "Microsoft", "Amazon", "Shopify", "Stripe"],
+    prerequisites: ["Programming fundamentals", "Problem solving"],
+  },
+  "cybersecurity-analyst": {
+    careerTitle: "Cybersecurity Analyst",
+    description:
+      "Protect systems, data, and users by spotting threats, investigating incidents, and hardening defenses across networks and applications.",
+    demandLevel: "Very High",
+    salaryRange: { min: 95000, max: 175000 },
+    skills: [
+      { name: "Networking", level: "Advanced" },
+      { name: "Threat Detection", level: "Advanced" },
+      { name: "Incident Response", level: "Advanced" },
+      { name: "Security Tools", level: "Intermediate" },
+      { name: "Risk Analysis", level: "Intermediate" },
+    ],
+    tools: ["Splunk", "Wireshark", "Nmap", "SIEM", "Linux"],
+    companies: [
+      "CrowdStrike",
+      "Palo Alto Networks",
+      "Microsoft",
+      "Cisco",
+      "IBM",
+    ],
+    prerequisites: ["Networking basics", "Security fundamentals"],
+  },
+  "cloud-architect": {
+    careerTitle: "Cloud Architect",
+    description:
+      "Design scalable cloud systems and the infrastructure behind modern products. Balance reliability, security, performance, and cost across deployments.",
+    demandLevel: "Very High",
+    salaryRange: { min: 125000, max: 220000 },
+    skills: [
+      { name: "Cloud Platforms", level: "Advanced" },
+      { name: "Networking", level: "Advanced" },
+      { name: "Infrastructure as Code", level: "Advanced" },
+      { name: "Security", level: "Intermediate" },
+      { name: "Reliability Engineering", level: "Advanced" },
+    ],
+    tools: ["AWS", "Azure", "GCP", "Terraform", "Kubernetes"],
+    companies: ["Amazon", "Microsoft", "Google", "Netflix", "Snowflake"],
+    prerequisites: ["Cloud basics", "Networking knowledge"],
+  },
+  "ux-ui-designer": {
+    careerTitle: "UX/UI Designer",
+    description:
+      "Craft intuitive digital experiences that people enjoy using. Work across research, wireframes, prototypes, and visual design to solve real user problems.",
+    demandLevel: "High",
+    salaryRange: { min: 90000, max: 170000 },
+    skills: [
+      { name: "User Research", level: "Advanced" },
+      { name: "Wireframing & Prototyping", level: "Advanced" },
+      { name: "Visual Design", level: "Advanced" },
+      { name: "Accessibility", level: "Intermediate" },
+      { name: "Design Systems", level: "Intermediate" },
+    ],
+    tools: ["Figma", "FigJam", "Miro", "Canva", "Notion"],
+    companies: ["Apple", "Google", "Adobe", "Figma", "Airbnb"],
+    prerequisites: ["Visual curiosity", "Empathy for users"],
+  },
 };
 
 /**
  * Generate career path based on quiz answers (fallback version without Gemini)
  */
-async function generateCareerPath(quizAnswers, userInterests) {
+async function generateCareerPath(
+  quizAnswers,
+  userInterests,
+  preferredCareerSlug,
+) {
   try {
     // Determine best career path from quiz answers
-    const careerSlug = determineCareerFromAnswers(quizAnswers);
+    const careerSlug =
+      preferredCareerSlug && careerTemplates[preferredCareerSlug]
+        ? preferredCareerSlug
+        : determineCareerFromAnswers(quizAnswers);
     const template =
       careerTemplates[careerSlug] || careerTemplates["ml-engineer"];
 
@@ -294,6 +375,185 @@ function generatePhases(careerTitle) {
         ],
       },
     ],
+    "Software Engineer": [
+      {
+        phase: 1,
+        title: "Foundation",
+        duration: "2-3 months",
+        topics: [
+          "Programming Basics",
+          "Git & Version Control",
+          "Data Structures",
+          "Debugging Fundamentals",
+        ],
+      },
+      {
+        phase: 2,
+        title: "Build Core Products",
+        duration: "3-4 months",
+        topics: [
+          "APIs & REST",
+          "Databases",
+          "Authentication",
+          "Testing Basics",
+        ],
+      },
+      {
+        phase: 3,
+        title: "Systems & Scale",
+        duration: "3-4 months",
+        topics: [
+          "System Design",
+          "Performance Optimization",
+          "Deployment",
+          "Observability",
+        ],
+      },
+      {
+        phase: 4,
+        title: "Production Engineering",
+        duration: "Ongoing",
+        topics: ["Code Reviews", "CI/CD", "Security Basics", "Architecture"],
+      },
+    ],
+    "Cybersecurity Analyst": [
+      {
+        phase: 1,
+        title: "Security Foundations",
+        duration: "2-3 months",
+        topics: [
+          "Networking Basics",
+          "Linux Fundamentals",
+          "Security Principles",
+          "Threat Landscape",
+        ],
+      },
+      {
+        phase: 2,
+        title: "Detection & Analysis",
+        duration: "3-4 months",
+        topics: [
+          "Log Analysis",
+          "SIEM Tools",
+          "Vulnerability Scanning",
+          "Threat Detection",
+        ],
+      },
+      {
+        phase: 3,
+        title: "Incident Response",
+        duration: "3 months",
+        topics: [
+          "Triage & Containment",
+          "Forensics Basics",
+          "Hardening Systems",
+          "Policy & Compliance",
+        ],
+      },
+      {
+        phase: 4,
+        title: "Advanced Security",
+        duration: "Ongoing",
+        topics: [
+          "Cloud Security",
+          "Automation",
+          "Red Team / Blue Team",
+          "Risk Management",
+        ],
+      },
+    ],
+    "Cloud Architect": [
+      {
+        phase: 1,
+        title: "Cloud Foundations",
+        duration: "2-3 months",
+        topics: [
+          "Cloud Service Models",
+          "Networking Fundamentals",
+          "Identity & Access",
+          "Compute & Storage",
+        ],
+      },
+      {
+        phase: 2,
+        title: "Infrastructure Design",
+        duration: "3-4 months",
+        topics: [
+          "Virtual Networks",
+          "Load Balancing",
+          "Autoscaling",
+          "Infrastructure as Code",
+        ],
+      },
+      {
+        phase: 3,
+        title: "Reliability & Security",
+        duration: "3 months",
+        topics: [
+          "High Availability",
+          "Disaster Recovery",
+          "Cloud Security",
+          "Monitoring",
+        ],
+      },
+      {
+        phase: 4,
+        title: "Scaling Organizations",
+        duration: "Ongoing",
+        topics: [
+          "Cost Governance",
+          "Platform Engineering",
+          "Multi-cloud Strategy",
+          "Performance Tuning",
+        ],
+      },
+    ],
+    "UX/UI Designer": [
+      {
+        phase: 1,
+        title: "Design Foundations",
+        duration: "2 months",
+        topics: [
+          "Design Principles",
+          "Color & Typography",
+          "UX Basics",
+          "Accessibility Basics",
+        ],
+      },
+      {
+        phase: 2,
+        title: "Research & Ideation",
+        duration: "2-3 months",
+        topics: [
+          "User Interviews",
+          "Personas & Journeys",
+          "Problem Framing",
+          "Information Architecture",
+        ],
+      },
+      {
+        phase: 3,
+        title: "Prototyping",
+        duration: "3 months",
+        topics: [
+          "Wireframes",
+          "Interactive Prototypes",
+          "Usability Testing",
+          "Iteration",
+        ],
+      },
+      {
+        phase: 4,
+        title: "Design Systems & Delivery",
+        duration: "Ongoing",
+        topics: [
+          "Components & Tokens",
+          "Handoff to Engineering",
+          "Design Critique",
+          "Portfolio Building",
+        ],
+      },
+    ],
   };
 
   return phaseMap[careerTitle] || phaseMap["Machine Learning Engineer"];
@@ -303,58 +563,127 @@ function generatePhases(careerTitle) {
  * Determine best career from quiz answers
  */
 function determineCareerFromAnswers(quizAnswers) {
-  const careerScores = {
-    "ml-engineer": 0,
-    "data-scientist": 0,
-    "nlp-engineer": 0,
-    "cv-engineer": 0,
+  const careerScores = {};
+
+  const getWeightEntries = (weights) => {
+    if (!weights) return [];
+    if (weights instanceof Map) return Array.from(weights.entries());
+    if (Array.isArray(weights)) return weights;
+    if (typeof weights === "object") return Object.entries(weights);
+    return [];
   };
 
-  // Simple scoring based on answers
-  const answerText = quizAnswers
-    .map((a) => (a.selectedOption?.text || a.selectedText || "").toLowerCase())
-    .join(" ");
+  const addScore = (career, weight) => {
+    if (!career) return;
+    const numericWeight = Number(weight) || 0;
+    careerScores[career] = (careerScores[career] || 0) + numericWeight;
+  };
 
-  if (
-    answerText.includes("language") ||
-    answerText.includes("nlp") ||
-    answerText.includes("chatbot")
-  ) {
-    careerScores["nlp-engineer"] += 3;
-  }
-  if (
-    answerText.includes("vision") ||
-    answerText.includes("image") ||
-    answerText.includes("visual")
-  ) {
-    careerScores["cv-engineer"] += 3;
-  }
-  if (
-    answerText.includes("data") ||
-    answerText.includes("analysis") ||
-    answerText.includes("visualization")
-  ) {
-    careerScores["data-scientist"] += 2;
-  }
-  if (
-    answerText.includes("build") ||
-    answerText.includes("code") ||
-    answerText.includes("deploy")
-  ) {
-    careerScores["ml-engineer"] += 2;
-  }
+  const answers = Array.isArray(quizAnswers) ? quizAnswers : [];
+  let hasStructuredWeights = false;
 
-  // Return career with highest score, default to ML Engineer
-  let maxCareer = "ml-engineer";
-  let maxScore = 0;
-  for (const [career, score] of Object.entries(careerScores)) {
-    if (score > maxScore) {
-      maxScore = score;
-      maxCareer = career;
+  for (const answer of answers) {
+    const weights =
+      answer?.careerWeights || answer?.selectedOption?.careerWeights || null;
+    const entries = getWeightEntries(weights);
+
+    if (entries.length > 0) {
+      hasStructuredWeights = true;
+      entries.forEach(([career, weight]) => addScore(career, weight));
     }
   }
 
-  return maxScore > 0 ? maxCareer : "ml-engineer";
+  if (hasStructuredWeights) {
+    const ranked = Object.entries(careerScores).sort(([, a], [, b]) => b - a);
+    return ranked[0]?.[0] || "software-engineer";
+  }
+
+  const answerText = answers
+    .map((a) => (a.selectedOption?.text || a.selectedText || "").toLowerCase())
+    .join(" ");
+
+  const keywordWeights = [
+    [
+      "cybersecurity-analyst",
+      [
+        "security",
+        "threat",
+        "incident",
+        "risk",
+        "vulnerability",
+        "protect",
+        "defend",
+      ],
+    ],
+    [
+      "cloud-architect",
+      [
+        "cloud",
+        "infrastructure",
+        "deploy",
+        "automation",
+        "reliability",
+        "scalable",
+        "terraform",
+      ],
+    ],
+    [
+      "software-engineer",
+      [
+        "build",
+        "code",
+        "app",
+        "api",
+        "backend",
+        "frontend",
+        "feature",
+        "software",
+      ],
+    ],
+    [
+      "ux-ui-designer",
+      [
+        "design",
+        "user",
+        "ux",
+        "ui",
+        "prototype",
+        "wireframe",
+        "experience",
+        "interface",
+      ],
+    ],
+    [
+      "data-scientist",
+      [
+        "data",
+        "analysis",
+        "visualization",
+        "dashboard",
+        "insight",
+        "statistics",
+      ],
+    ],
+    ["ml-engineer", ["ml", "machine learning", "model", "pipeline", "deploy"]],
+    ["nlp-engineer", ["language", "nlp", "chatbot", "text", "llm"]],
+    ["cv-engineer", ["vision", "image", "visual", "camera", "recognition"]],
+    [
+      "ai-product-manager",
+      ["strategy", "communication", "roadmap", "lead", "product"],
+    ],
+  ];
+
+  for (const [career, keywords] of keywordWeights) {
+    for (const keyword of keywords) {
+      if (answerText.includes(keyword)) {
+        addScore(career, career === "data-scientist" ? 2 : 3);
+        break;
+      }
+    }
+  }
+
+  const ranked = Object.entries(careerScores).sort(([, a], [, b]) => b - a);
+  return ranked[0]?.[0] || "software-engineer";
 }
 
 /**

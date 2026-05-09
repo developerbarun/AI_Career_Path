@@ -1,12 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const Quiz = require("../models/Quiz");
-const { seedQuiz } = require("../seed/seedData");
+const { seedQuiz, quizData } = require("../seed/seedData");
 
 router.get("/", async (req, res) => {
   try {
     let questions = await Quiz.find();
-    if (questions.length === 0) {
+    const needsRefresh =
+      questions.length !== quizData.length ||
+      questions[0]?.question !== quizData[0]?.question;
+
+    if (needsRefresh) {
       await seedQuiz();
       questions = await Quiz.find();
     }

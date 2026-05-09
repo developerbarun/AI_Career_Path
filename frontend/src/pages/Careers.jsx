@@ -21,10 +21,10 @@ export default function Careers() {
       <section className="section">
         <div className="section-header">
           <span className="section-tag">All Paths</span>
-          <h2>AI Career Paths</h2>
+          <h2>Career Paths</h2>
           <p>
             Deep dive into each role — skills, roadmaps, salary ranges, and the
-            companies hiring
+            companies hiring across tech, design, security, cloud, and AI
           </p>
         </div>
 

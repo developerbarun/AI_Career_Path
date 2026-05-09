@@ -18,3 +18,7 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+
+AUTHENTICATION_AND_DASHBOARD_UPDATE.md
+PROJECT_ARCHITECTURE_AND_DESIGN.md
